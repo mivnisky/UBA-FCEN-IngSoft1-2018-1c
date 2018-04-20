@@ -222,6 +222,11 @@ invalidNumberType
 
 	self error: self class invalidNumberTypeErrorDescription! !
 
+!Numero methodsFor: 'arithmetic operations' stamp: 'MI 4/20/2018 02:34:44'!
+inverse
+
+	self subclassResponsibility ! !
+
 !Numero methodsFor: 'arithmetic operations' stamp: 'NDC 4/19/2018 20:36:44'!
 multiplyAFraction: anAdder
 
@@ -241,6 +246,17 @@ isOne
 !Numero methodsFor: 'testing' stamp: 'HernanWilkinson 5/7/2016 22:49'!
 isZero
 
+	self subclassResponsibility ! !
+
+
+!Numero methodsFor: 'comparing' stamp: 'MI 4/20/2018 02:32:15'!
+= anObject
+	
+	self subclassResponsibility ! !
+
+!Numero methodsFor: 'comparing' stamp: 'MI 4/20/2018 02:34:08'!
+hash
+	
 	self subclassResponsibility ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
@@ -304,9 +320,6 @@ asNumerator
 hash
 
 	^value hash! !
-
-!Entero methodsFor: 'comparing' stamp: 'NDC 4/19/2018 20:56:31'!
-raiseErrorOnNullFraction! !
 
 
 !Entero methodsFor: 'initialization' stamp: 'HernanWilkinson 5/7/2016 20:09'!
@@ -394,7 +407,7 @@ Entero subclass: #EnterosMayoresA2
 	poolDictionaries: ''
 	category: 'Numero-Exercise'!
 
-!EnterosMayoresA2 methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 21:08:45'!
+!EnterosMayoresA2 methodsFor: 'comparing' stamp: 'NDC 4/19/2018 21:08:45'!
 asDenominator
 
 ^self! !
@@ -407,30 +420,32 @@ Entero subclass: #Uno
 	poolDictionaries: ''
 	category: 'Numero-Exercise'!
 
-!Uno methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 21:49:03'!
+!Uno methodsFor: 'arithmetic operations' stamp: 'NDC 4/19/2018 21:49:03'!
 * aMultiplier
 	
 	^aMultiplier! !
 
-!Uno methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 21:08:23'!
-asDenominator
-	
-	^self error: 'una fraccion no puede tener denominador 1 porque sino es un entero' ! !
-
-!Uno methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 21:29:40'!
-init
-
-self initalizeWith: 1! !
-
-!Uno methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:48:31'!
+!Uno methodsFor: 'arithmetic operations' stamp: 'NDC 4/19/2018 20:48:31'!
 multiplyAFraction: AMultiplier
 	
 	^AMultiplier! !
 
-!Uno methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:48:09'!
+!Uno methodsFor: 'arithmetic operations' stamp: 'NDC 4/19/2018 20:48:09'!
 multiplyAnInteger: AMultiplier
 	
 	^AMultiplier! !
+
+
+!Uno methodsFor: 'comparing' stamp: 'NDC 4/19/2018 21:08:23'!
+asDenominator
+	
+	^self error: 'una fraccion no puede tener denominador 1 porque sino es un entero' ! !
+
+
+!Uno methodsFor: 'initialization' stamp: 'NDC 4/19/2018 21:29:40'!
+init
+
+self initalizeWith: 1! !
 
 
 !classDefinition: #Zero category: #'Numero-Exercise'!
@@ -440,64 +455,62 @@ Entero subclass: #Zero
 	poolDictionaries: ''
 	category: 'Numero-Exercise'!
 
-!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:06:02'!
+!Zero methodsFor: 'arithmetic operations' stamp: 'NDC 4/19/2018 20:06:02'!
 * aMultiplier
 	
 	^self! !
 
-!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:05:23'!
+!Zero methodsFor: 'arithmetic operations' stamp: 'NDC 4/19/2018 20:05:23'!
 + anAdder
 	
 	^anAdder! !
 
-!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:50:36'!
+!Zero methodsFor: 'arithmetic operations' stamp: 'NDC 4/19/2018 20:50:36'!
 / aDivisor
 	
 	^self! !
 
-!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:20:52'!
+!Zero methodsFor: 'arithmetic operations' stamp: 'NDC 4/19/2018 20:20:52'!
 addAFraction: AnAdder
 	
 	^AnAdder! !
 
-!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:21:03'!
+!Zero methodsFor: 'arithmetic operations' stamp: 'NDC 4/19/2018 20:21:03'!
 addAnInteger: AnAdder
 	
 	^AnAdder! !
 
-!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 21:12:50'!
-asDenominator
-
-	^self error: self canNotDivideByZeroErrorDescription! !
-
-!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 21:12:40'!
-asNumerator
-
-	^self error: 'una fraccion no puede ser cero'! !
-
-!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 21:29:34'!
-init
-
-self initalizeWith: 0! !
-
-!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 22:02:20'!
+!Zero methodsFor: 'arithmetic operations' stamp: 'NDC 4/19/2018 22:02:20'!
 inverse
 	
 	^self error: self class canNotDivideByZeroErrorDescription! !
 
-!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:50:55'!
+!Zero methodsFor: 'arithmetic operations' stamp: 'NDC 4/19/2018 20:50:55'!
 multiplyAFraction: AMultiplier
 	
 	^self! !
 
-!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:51:01'!
+!Zero methodsFor: 'arithmetic operations' stamp: 'NDC 4/19/2018 20:51:01'!
 multiplyAnInteger: AMultiplier
 	
 	^self! !
 
-!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:55:32'!
-raiseErrorOnNullFraction
+
+!Zero methodsFor: 'comparing' stamp: 'NDC 4/19/2018 21:12:50'!
+asDenominator
+
+	^self error: self canNotDivideByZeroErrorDescription! !
+
+!Zero methodsFor: 'comparing' stamp: 'NDC 4/19/2018 21:12:40'!
+asNumerator
+
 	^self error: 'una fraccion no puede ser cero'! !
+
+
+!Zero methodsFor: 'initialization' stamp: 'NDC 4/19/2018 21:29:34'!
+init
+
+self initalizeWith: 0! !
 
 
 !classDefinition: #Fraccion category: #'Numero-Exercise'!
