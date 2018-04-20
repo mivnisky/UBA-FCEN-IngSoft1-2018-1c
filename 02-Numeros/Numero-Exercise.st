@@ -321,6 +321,12 @@ hash
 
 	^value hash! !
 
+!Entero methodsFor: 'comparing' stamp: 'MI 4/20/2018 03:02:07'!
+ifOneEvaluate: aBlock! !
+
+!Entero methodsFor: 'comparing' stamp: 'MI 4/20/2018 03:02:13'!
+ifZeroEvaluate: aBlock! !
+
 
 !Entero methodsFor: 'initialization' stamp: 'HernanWilkinson 5/7/2016 20:09'!
 initalizeWith: aValue 
@@ -441,6 +447,11 @@ asDenominator
 	
 	^self error: 'una fraccion no puede tener denominador 1 porque sino es un entero' ! !
 
+!Uno methodsFor: 'comparing' stamp: 'MI 4/20/2018 02:59:14'!
+ifOneEvaluate: aBlock
+
+	aBlock value.! !
+
 
 !Uno methodsFor: 'initialization' stamp: 'NDC 4/19/2018 21:29:40'!
 init
@@ -505,6 +516,11 @@ asDenominator
 asNumerator
 
 	^self error: 'una fraccion no puede ser cero'! !
+
+!Zero methodsFor: 'comparing' stamp: 'MI 4/20/2018 02:58:49'!
+ifZeroEvaluate: aBlock
+
+	aBlock value.! !
 
 
 !Zero methodsFor: 'initialization' stamp: 'NDC 4/19/2018 21:29:34'!
@@ -618,18 +634,18 @@ numerator
 Fraccion class
 	instanceVariableNames: ''!
 
-!Fraccion class methodsFor: 'intance creation' stamp: 'NDC 4/19/2018 21:12:20'!
+!Fraccion class methodsFor: 'intance creation' stamp: 'MI 4/20/2018 02:58:20'!
 with: aDividend over: aDivisor
 
 	| greatestCommonDivisor numerator denominator |
 	
-	aDividend isZero ifTrue: [ ^aDividend ].
+	aDividend ifZeroEvaluate: [ ^aDividend ].
 	
 	greatestCommonDivisor := aDividend greatestCommonDivisorWith: aDivisor. 
 	numerator := aDividend // greatestCommonDivisor.
 	denominator := aDivisor // greatestCommonDivisor.
 	
-	denominator isOne ifTrue: [ ^numerator ].
+	denominator ifOneEvaluate: [ ^numerator ].
 
 	^self new initializeWith: numerator over: denominator
 	! !
