@@ -207,10 +207,30 @@ Object subclass: #Numero
 
 	self subclassResponsibility ! !
 
+!Numero methodsFor: 'arithmetic operations' stamp: 'NDC 4/19/2018 20:36:30'!
+addAFraction: anAdder
+
+	self subclassResponsibility ! !
+
+!Numero methodsFor: 'arithmetic operations' stamp: 'NDC 4/19/2018 20:36:36'!
+addAnInteger: anAdder
+
+	self subclassResponsibility ! !
+
 !Numero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 22:48'!
 invalidNumberType
 
 	self error: self class invalidNumberTypeErrorDescription! !
+
+!Numero methodsFor: 'arithmetic operations' stamp: 'NDC 4/19/2018 20:36:44'!
+multiplyAFraction: anAdder
+
+	self subclassResponsibility ! !
+
+!Numero methodsFor: 'arithmetic operations' stamp: 'NDC 4/19/2018 20:36:49'!
+multiplyAnInteger: anAdder
+
+	self subclassResponsibility ! !
 
 
 !Numero methodsFor: 'testing' stamp: 'HernanWilkinson 5/7/2016 22:49'!
@@ -222,7 +242,6 @@ isOne
 isZero
 
 	self subclassResponsibility ! !
-
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -271,10 +290,23 @@ isZero
 
 	^(anObject isKindOf: self class) and: [ value = anObject integerValue ]! !
 
+!Entero methodsFor: 'comparing' stamp: 'NDC 4/19/2018 21:31:18'!
+asDenominator
+
+	self subclassResponsibility ! !
+
+!Entero methodsFor: 'comparing' stamp: 'NDC 4/19/2018 21:10:18'!
+asNumerator
+
+	^self! !
+
 !Entero methodsFor: 'comparing' stamp: 'HernanWilkinson 5/7/2016 20:17'!
 hash
 
 	^value hash! !
+
+!Entero methodsFor: 'comparing' stamp: 'NDC 4/19/2018 20:56:31'!
+raiseErrorOnNullFraction! !
 
 
 !Entero methodsFor: 'initialization' stamp: 'HernanWilkinson 5/7/2016 20:09'!
@@ -283,33 +315,60 @@ initalizeWith: aValue
 	value := aValue! !
 
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:13'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'NDC 4/16/2018 21:08:39'!
 * aMultiplier 
 	
-	^self class with: value * aMultiplier integerValue
+	^aMultiplier multiplyAnInteger: self
 	! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:13'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'NDC 4/16/2018 21:07:13'!
 + anAdder 
 	
-	^self class with: value + anAdder integerValue
+	^anAdder addAnInteger: self
 ! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:14'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'NDC 4/16/2018 21:49:01'!
 / aDivisor 
 	
-	^Fraccion with: self over: aDivisor! !
+	^self * (aDivisor inverse)! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 21:55'!
 // aDivisor 
 	
 	^self class with: value // aDivisor integerValue! !
 
+!Entero methodsFor: 'arithmetic operations' stamp: 'NDC 4/16/2018 21:10:24'!
+addAFraction: anAdder 
+	
+	^anAdder addAnInteger: self
+! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'NDC 4/16/2018 21:04:32'!
+addAnInteger: anAdder 
+	
+	^self class with: value + anAdder integerValue
+! !
+
 !Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 21:00'!
 greatestCommonDivisorWith: anEntero 
 	
 	^self class with: (value gcd: anEntero integerValue)! !
 
+!Entero methodsFor: 'arithmetic operations' stamp: 'NDC 4/16/2018 21:37:58'!
+inverse 
+	
+	^Fraccion with: (self class with: 1) over: self! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'NDC 4/16/2018 21:09:04'!
+multiplyAFraction: aMultiplier 
+	
+	^aMultiplier multiplyAnInteger: self	! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'NDC 4/16/2018 21:07:47'!
+multiplyAnInteger: aMultiplier 
+	
+	^self class with: value * aMultiplier integerValue
+	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -317,13 +376,128 @@ greatestCommonDivisorWith: anEntero
 Entero class
 	instanceVariableNames: ''!
 
-!Entero class methodsFor: 'instance creation' stamp: 'HernanWilkinson 5/7/2016 22:53'!
+!Entero class methodsFor: 'instance creation' stamp: 'NDC 4/19/2018 21:33:12'!
 with: aValue 
 	
 	"Esta verificacion esta puesta por si se equivocan y quieren crear un Entero pasando otra cosa que un Integer - Hernan"
 	aValue isInteger ifFalse: [  self error: 'aValue debe ser anInteger' ].
 	
-	^self new initalizeWith: aValue! !
+	aValue = 0 ifTrue: [ ^ Zero new init ].
+     aValue = 1 ifTrue: [ ^ Uno new init].
+	^EnterosMayoresA2 new initalizeWith: aValue! !
+
+
+!classDefinition: #EnterosMayoresA2 category: #'Numero-Exercise'!
+Entero subclass: #EnterosMayoresA2
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Numero-Exercise'!
+
+!EnterosMayoresA2 methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 21:08:45'!
+asDenominator
+
+^self! !
+
+
+!classDefinition: #Uno category: #'Numero-Exercise'!
+Entero subclass: #Uno
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Numero-Exercise'!
+
+!Uno methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 21:49:03'!
+* aMultiplier
+	
+	^aMultiplier! !
+
+!Uno methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 21:08:23'!
+asDenominator
+	
+	^self error: 'una fraccion no puede tener denominador 1 porque sino es un entero' ! !
+
+!Uno methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 21:29:40'!
+init
+
+self initalizeWith: 1! !
+
+!Uno methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:48:31'!
+multiplyAFraction: AMultiplier
+	
+	^AMultiplier! !
+
+!Uno methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:48:09'!
+multiplyAnInteger: AMultiplier
+	
+	^AMultiplier! !
+
+
+!classDefinition: #Zero category: #'Numero-Exercise'!
+Entero subclass: #Zero
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Numero-Exercise'!
+
+!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:06:02'!
+* aMultiplier
+	
+	^self! !
+
+!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:05:23'!
++ anAdder
+	
+	^anAdder! !
+
+!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:50:36'!
+/ aDivisor
+	
+	^self! !
+
+!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:20:52'!
+addAFraction: AnAdder
+	
+	^AnAdder! !
+
+!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:21:03'!
+addAnInteger: AnAdder
+	
+	^AnAdder! !
+
+!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 21:12:50'!
+asDenominator
+
+	^self error: self canNotDivideByZeroErrorDescription! !
+
+!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 21:12:40'!
+asNumerator
+
+	^self error: 'una fraccion no puede ser cero'! !
+
+!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 21:29:34'!
+init
+
+self initalizeWith: 0! !
+
+!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 22:02:20'!
+inverse
+	
+	^self error: self class canNotDivideByZeroErrorDescription! !
+
+!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:50:55'!
+multiplyAFraction: AMultiplier
+	
+	^self! !
+
+!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:51:01'!
+multiplyAnInteger: AMultiplier
+	
+	^self! !
+
+!Zero methodsFor: 'as yet unclassified' stamp: 'NDC 4/19/2018 20:55:32'!
+raiseErrorOnNullFraction
+	^self error: 'una fraccion no puede ser cero'! !
 
 
 !classDefinition: #Fraccion category: #'Numero-Exercise'!
@@ -344,15 +518,11 @@ isZero
 	^false! !
 
 
-!Fraccion methodsFor: 'initialization' stamp: 'HernanWilkinson 5/7/2016 22:54'!
-initializeWith: aNumerator over: aDenominator
+!Fraccion methodsFor: 'initialization' stamp: 'NDC 4/19/2018 21:07:37'!
+initializeWith: desiredNumerator over: desiredDenominator
 
-	"Estas precondiciones estan por si se comenten errores en la implementacion - Hernan"
-	aNumerator isZero ifTrue: [ self error: 'una fraccion no puede ser cero' ].
-	aDenominator isOne ifTrue: [ self error: 'una fraccion no puede tener denominador 1 porque sino es un entero' ].
-	
-	numerator := aNumerator.
-	denominator := aDenominator ! !
+	numerator := desiredNumerator asNumerator.
+	denominator := desiredDenominator asDenominator ! !
 
 
 !Fraccion methodsFor: 'comparing' stamp: 'HernanWilkinson 5/7/2016 20:42'!
@@ -366,15 +536,24 @@ hash
 	^(numerator hash / denominator hash) hash! !
 
 
-
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:14'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'NDC 4/16/2018 21:02:10'!
 * aMultiplier 
 	
-	^(numerator * aMultiplier numerator) / (denominator * aMultiplier denominator)
+	^aMultiplier multiplyAFraction: self 
 	! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:14'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'NDC 4/16/2018 20:57:57'!
 + anAdder 
+	
+	^anAdder addAFraction: self ! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'NDC 4/16/2018 21:48:29'!
+/ aDivisor 
+	
+	^self * (aDivisor inverse)! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'NDC 4/16/2018 21:19:58'!
+addAFraction: anAdder 
 	
 	| newNumerator newDenominator |
 	
@@ -383,10 +562,31 @@ hash
 	
 	^newNumerator / newDenominator ! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:14'!
-/ aDivisor 
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'NDC 4/16/2018 21:28:20'!
+addAnInteger: anAdder 
 	
-	^(numerator * aDivisor denominator) / (denominator * aDivisor numerator)! !
+	| newNumerator |
+	
+	newNumerator := numerator + (denominator * anAdder).
+	
+	^newNumerator / denominator ! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'NDC 4/16/2018 21:50:28'!
+inverse
+	
+	^Fraccion with: denominator over: numerator! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'NDC 4/16/2018 21:01:01'!
+multiplyAFraction: aMultiplier 
+	
+	^(numerator * aMultiplier numerator) / (denominator * aMultiplier denominator)
+	! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'NDC 4/16/2018 21:52:09'!
+multiplyAnInteger: aMultiplier 
+	
+	^Fraccion with: (numerator * aMultiplier) over: denominator
+	! !
 
 
 !Fraccion methodsFor: 'accessing' stamp: 'HernanWilkinson 5/7/2016 21:56'!
@@ -405,12 +605,11 @@ numerator
 Fraccion class
 	instanceVariableNames: ''!
 
-!Fraccion class methodsFor: 'intance creation' stamp: 'HernanWilkinson 5/7/2016 20:41'!
+!Fraccion class methodsFor: 'intance creation' stamp: 'NDC 4/19/2018 21:12:20'!
 with: aDividend over: aDivisor
 
 	| greatestCommonDivisor numerator denominator |
 	
-	aDivisor isZero ifTrue: [ self error: self canNotDivideByZeroErrorDescription ].
 	aDividend isZero ifTrue: [ ^aDividend ].
 	
 	greatestCommonDivisor := aDividend greatestCommonDivisorWith: aDivisor. 
