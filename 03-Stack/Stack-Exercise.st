@@ -192,7 +192,7 @@ stackEmptyErrorDescription
 	^ 'Stack is empty'! !
 
 
-!OOStack class methodsFor: 'instance creation' stamp: 'MI 4/21/2018 00:57:07'!
+!OOStack class methodsFor: 'instance creation' stamp: 'MI 4/21/2018 01:09:00'!
 new
 
-	^ super new initialize! !
+	^ super new! !
