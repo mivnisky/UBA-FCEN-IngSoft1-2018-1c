@@ -139,46 +139,54 @@ test10CanNotTopWhenThereAreNoObjectsInTheStack
 
 !classDefinition: #OOStack category: #'Stack-Exercise'!
 Object subclass: #OOStack
-	instanceVariableNames: 'orderedElements'
+	instanceVariableNames: 'topElement size'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!OOStack methodsFor: 'testing' stamp: 'MI 4/21/2018 00:47:49'!
+!OOStack methodsFor: 'testing' stamp: 'MI 4/25/2018 19:52:31'!
 isEmpty
 	
-	^ orderedElements isEmpty! !
+	^ topElement isEmptyElement! !
 
-!OOStack methodsFor: 'testing' stamp: 'MI 4/21/2018 01:01:32'!
+!OOStack methodsFor: 'testing' stamp: 'MI 4/25/2018 20:13:27'!
 size
 
-	^ orderedElements size! !
+	^ size! !
 
 
-!OOStack methodsFor: 'initialization' stamp: 'MI 4/21/2018 00:56:15'!
+!OOStack methodsFor: 'initialization' stamp: 'MI 4/25/2018 20:12:27'!
 initialize
 
-	orderedElements _ OrderedCollection new.
+	topElement := OOStackEmptyElement new.
+	size := 0.
 	^ self! !
 
 
-!OOStack methodsFor: 'adding' stamp: 'MI 4/21/2018 00:57:58'!
+!OOStack methodsFor: 'adding' stamp: 'MI 4/25/2018 20:13:09'!
 push: anElement
 
-	orderedElements addFirst: anElement.
+	topElement := OOStackElement withValue: anElement andPrevious: topElement.
+	size := size + 1.
 	^ self! !
 
 
-!OOStack methodsFor: 'removing' stamp: 'MI 4/21/2018 00:59:30'!
+!OOStack methodsFor: 'removing' stamp: 'MI 4/25/2018 20:12:45'!
 pop
 	
-	^ orderedElements removeFirst! !
+	| topValue |
+	topValue := self top.
+	
+	topElement := topElement previous.
+	size := size - 1.
+	
+	^ topValue! !
 
 
-!OOStack methodsFor: 'accessing' stamp: 'MI 4/21/2018 01:00:25'!
+!OOStack methodsFor: 'accessing' stamp: 'MI 4/25/2018 20:02:05'!
 top
 
-	^ orderedElements first! !
+	^ topElement value! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -196,3 +204,65 @@ stackEmptyErrorDescription
 new
 
 	^ super new! !
+
+
+!classDefinition: #OOStackElement category: #'Stack-Exercise'!
+Object subclass: #OOStackElement
+	instanceVariableNames: 'previous value'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!OOStackElement methodsFor: 'accessing' stamp: 'MI 4/25/2018 20:00:02'!
+previous
+
+	^ previous ! !
+
+!OOStackElement methodsFor: 'accessing' stamp: 'MI 4/25/2018 20:02:51'!
+value
+
+	^ value! !
+
+
+!OOStackElement methodsFor: 'testing' stamp: 'MI 4/25/2018 19:53:39'!
+isEmptyElement
+
+	^ false! !
+
+
+!OOStackElement methodsFor: 'initialization' stamp: 'MI 4/25/2018 20:09:25'!
+withValue: aValue andPrevious: aStackElement
+
+	value := aValue.
+	previous := aStackElement.
+	^ self! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'OOStackElement class' category: #'Stack-Exercise'!
+OOStackElement class
+	instanceVariableNames: ''!
+
+!OOStackElement class methodsFor: 'instance creation' stamp: 'MI 4/25/2018 20:08:15'!
+withValue: aValue andPrevious: aStackElement
+
+	^ self new withValue: aValue andPrevious: aStackElement! !
+
+
+!classDefinition: #OOStackEmptyElement category: #'Stack-Exercise'!
+Object subclass: #OOStackEmptyElement
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!OOStackEmptyElement methodsFor: 'testing' stamp: 'MI 4/25/2018 19:53:09'!
+isEmptyElement
+
+	^ true! !
+
+
+!OOStackEmptyElement methodsFor: 'accessing' stamp: 'MI 4/25/2018 20:04:24'!
+value
+	
+	^ self error: OOStack stackEmptyErrorDescription ! !
