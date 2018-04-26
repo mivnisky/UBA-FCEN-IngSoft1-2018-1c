@@ -149,7 +149,7 @@ isEmpty
 	
 	^ topElement isEmptyElement! !
 
-!OOStack methodsFor: 'testing' stamp: 'MI 4/25/2018 20:13:27'!
+!OOStack methodsFor: 'testing' stamp: 'NDC 4/26/2018 00:28:15'!
 size
 
 	^ size! !
@@ -163,19 +163,19 @@ initialize
 	^ self! !
 
 
-!OOStack methodsFor: 'adding' stamp: 'MI 4/25/2018 20:13:09'!
-push: anElement
+!OOStack methodsFor: 'adding' stamp: 'NDC 4/26/2018 00:24:56'!
+push: aValue
+	topElement _ OOStackElementContainingAValue
+		withValue: aValue
+		andPrevious: topElement.
+	size _ size + 1.! !
 
-	topElement := OOStackElement withValue: anElement andPrevious: topElement.
-	size := size + 1.
-	^ self! !
 
-
-!OOStack methodsFor: 'removing' stamp: 'MI 4/25/2018 20:12:45'!
+!OOStack methodsFor: 'removing' stamp: 'NDC 4/26/2018 00:23:25'!
 pop
 	
 	| topValue |
-	topValue := self top.
+	topValue := self top value.
 	
 	topElement := topElement previous.
 	size := size - 1.
@@ -206,31 +206,31 @@ new
 	^ super new! !
 
 
-!classDefinition: #OOStackElement category: #'Stack-Exercise'!
-Object subclass: #OOStackElement
+!classDefinition: #OOStackElementContainingAValue category: #'Stack-Exercise'!
+Object subclass: #OOStackElementContainingAValue
 	instanceVariableNames: 'previous value'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!OOStackElement methodsFor: 'accessing' stamp: 'MI 4/25/2018 20:00:02'!
+!OOStackElementContainingAValue methodsFor: 'accessing' stamp: 'MI 4/25/2018 20:00:02'!
 previous
 
 	^ previous ! !
 
-!OOStackElement methodsFor: 'accessing' stamp: 'MI 4/25/2018 20:02:51'!
+!OOStackElementContainingAValue methodsFor: 'accessing' stamp: 'MI 4/25/2018 20:02:51'!
 value
 
 	^ value! !
 
 
-!OOStackElement methodsFor: 'testing' stamp: 'MI 4/25/2018 19:53:39'!
+!OOStackElementContainingAValue methodsFor: 'testing' stamp: 'MI 4/25/2018 19:53:39'!
 isEmptyElement
 
 	^ false! !
 
 
-!OOStackElement methodsFor: 'initialization' stamp: 'MI 4/25/2018 20:09:25'!
+!OOStackElementContainingAValue methodsFor: 'initialization' stamp: 'MI 4/25/2018 20:09:25'!
 withValue: aValue andPrevious: aStackElement
 
 	value := aValue.
@@ -239,11 +239,11 @@ withValue: aValue andPrevious: aStackElement
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OOStackElement class' category: #'Stack-Exercise'!
-OOStackElement class
+!classDefinition: 'OOStackElementContainingAValue class' category: #'Stack-Exercise'!
+OOStackElementContainingAValue class
 	instanceVariableNames: ''!
 
-!OOStackElement class methodsFor: 'instance creation' stamp: 'MI 4/25/2018 20:08:15'!
+!OOStackElementContainingAValue class methodsFor: 'instance creation' stamp: 'MI 4/25/2018 20:08:15'!
 withValue: aValue andPrevious: aStackElement
 
 	^ self new withValue: aValue andPrevious: aStackElement! !
