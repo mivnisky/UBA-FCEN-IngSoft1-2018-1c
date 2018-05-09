@@ -389,6 +389,11 @@ registers: aTransaction
 	self subclassResponsibility ! !
 
 
+!SummarizingAccount methodsFor: 'transactions' stamp: 'NDC 5/9/2018 02:10:51'!
+receptiveAccounts
+
+	self subclassResponsibility ! !
+
 !SummarizingAccount methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:35'!
 transactions
 
@@ -426,16 +431,24 @@ registers: aTransaction
 	^ accounts anySatisfy: [ :account | account registers: aTransaction ]! !
 
 
-!Portfolio methodsFor: 'transactions' stamp: 'MI 5/7/2018 21:52:26'!
-transactions 
+!Portfolio methodsFor: 'transactions' stamp: 'NDC 5/9/2018 02:25:30'!
+performRecursiveCollectOnReceptiveAccountsWithMessage: aMessageToSend
+	
+	| collection |
+	
+	collection _ Bag new.
+	
+	accounts do: [ :account | collection addAll: (account perform: aMessageToSend) ].
+	
+	^ collection.! !
 
-	| transactions |
-	
-	transactions := OrderedCollection new.
-	
-	accounts do: [ :account | transactions addAllLast: account transactions].
-	
-	^ transactions ! !
+!Portfolio methodsFor: 'transactions' stamp: 'NDC 5/9/2018 02:24:43'!
+receptiveAccounts
+	^ self performRecursiveCollectOnReceptiveAccountsWithMessage: #receptiveAccounts.! !
+
+!Portfolio methodsFor: 'transactions' stamp: 'NDC 5/9/2018 02:24:43'!
+transactions
+	^ self performRecursiveCollectOnReceptiveAccountsWithMessage: #transactions.! !
 
 !Portfolio methodsFor: 'transactions' stamp: 'MI 5/7/2018 22:07:10'!
 transactionsOf: anAccount 
@@ -455,6 +468,11 @@ initializeWith: aCollectionOfSummarizingAccounts
 Portfolio class
 	instanceVariableNames: ''!
 
+!Portfolio class methodsFor: 'instance creation' stamp: 'NDC 5/9/2018 01:48:06'!
+accountAlreadyManagedErrorMessage
+	
+	^ 'The portfolio cannot be created with duplicated accounts'! !
+
 !Portfolio class methodsFor: 'instance creation' stamp: 'MI 5/7/2018 22:06:00'!
 accountNotManagedMessageDescription
 
@@ -471,10 +489,18 @@ with: aSummarizingAccount1 with: aSummarizingAccount2
 	
 	^ self withAll: addedAccounts ! !
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'MI 5/7/2018 21:20:26'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'NDC 5/9/2018 02:16:24'!
 withAll: aCollectionOfSummarizingAccounts
 
-	^ (self new) initializeWith: aCollectionOfSummarizingAccounts ! !
+      | newPortfolio containedReceptiveAccounts |
+
+	newPortfolio := (self new) initializeWith: aCollectionOfSummarizingAccounts.
+	
+	containedReceptiveAccounts := newPortfolio receptiveAccounts.
+	
+	containedReceptiveAccounts size = containedReceptiveAccounts asSet size ifFalse: [^self error: self accountAlreadyManagedErrorMessage ].
+	
+	^newPortfolio! !
 
 
 !classDefinition: #ReceptiveAccount category: #'Portfolio-Ejercicio'!
@@ -490,6 +516,17 @@ initialize
 	super initialize.
 	transactions := OrderedCollection new.! !
 
+
+!ReceptiveAccount methodsFor: 'transactions' stamp: 'NDC 5/9/2018 02:13:34'!
+receptiveAccounts
+
+      | collection |
+
+      collection := Bag new.
+
+	 collection add: self.
+	
+	^collection! !
 
 !ReceptiveAccount methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:37'!
 register: aTransaction
