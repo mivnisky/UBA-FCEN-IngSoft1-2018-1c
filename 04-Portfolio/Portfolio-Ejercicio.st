@@ -413,10 +413,10 @@ SummarizingAccount subclass: #Portfolio
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 
-!Portfolio methodsFor: 'balance' stamp: 'MI 5/7/2018 21:06:08'!
+!Portfolio methodsFor: 'balance' stamp: 'NDC 5/10/2018 00:02:22'!
 balance
 
-	^(accounts collect: [ :account | account balance]) sum! !
+	^(accounts collect: [:account | account balance]) sum! !
 
 
 !Portfolio methodsFor: 'testing' stamp: 'MI 5/7/2018 21:41:04'!
@@ -431,16 +431,10 @@ registers: aTransaction
 	^ accounts anySatisfy: [ :account | account registers: aTransaction ]! !
 
 
-!Portfolio methodsFor: 'transactions' stamp: 'NDC 5/9/2018 02:25:30'!
-performRecursiveCollectOnReceptiveAccountsWithMessage: aMessageToSend
+!Portfolio methodsFor: 'transactions' stamp: 'NDC 5/10/2018 00:06:38'!
+performRecursiveCollectOnReceptiveAccountsWithMessage: aMessageSymbolToSend
 	
-	| collection |
-	
-	collection _ Bag new.
-	
-	accounts do: [ :account | collection addAll: (account perform: aMessageToSend) ].
-	
-	^ collection.! !
+	^ accounts inject: (Bag new) into: [:collection :account | collection addAll: (account perform: aMessageSymbolToSend). collection ]! !
 
 !Portfolio methodsFor: 'transactions' stamp: 'NDC 5/9/2018 02:24:43'!
 receptiveAccounts
@@ -489,7 +483,7 @@ with: aSummarizingAccount1 with: aSummarizingAccount2
 	
 	^ self withAll: addedAccounts ! !
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'NDC 5/9/2018 02:16:24'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'NDC 5/10/2018 00:08:16'!
 withAll: aCollectionOfSummarizingAccounts
 
       | newPortfolio containedReceptiveAccounts |
