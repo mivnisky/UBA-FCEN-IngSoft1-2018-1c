@@ -389,11 +389,6 @@ registers: aTransaction
 	self subclassResponsibility ! !
 
 
-!SummarizingAccount methodsFor: 'transactions' stamp: 'NDC 5/9/2018 02:10:51'!
-receptiveAccounts
-
-	self subclassResponsibility ! !
-
 !SummarizingAccount methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:35'!
 transactions
 
@@ -402,6 +397,12 @@ transactions
 
 !SummarizingAccount methodsFor: 'balance' stamp: 'HernanWilkinson 7/13/2011 18:34'!
 balance
+
+	self subclassResponsibility ! !
+
+
+!SummarizingAccount methodsFor: 'traversal' stamp: 'NDC 5/9/2018 02:10:51'!
+receptiveAccounts
 
 	self subclassResponsibility ! !
 
@@ -431,23 +432,14 @@ registers: aTransaction
 	^ accounts anySatisfy: [ :account | account registers: aTransaction ]! !
 
 
-!Portfolio methodsFor: 'transactions' stamp: 'NDC 5/10/2018 00:06:38'!
-performRecursiveCollectOnReceptiveAccountsWithMessage: aMessageSymbolToSend
-	
-	^ accounts inject: (Bag new) into: [:collection :account | collection addAll: (account perform: aMessageSymbolToSend). collection ]! !
-
-!Portfolio methodsFor: 'transactions' stamp: 'NDC 5/9/2018 02:24:43'!
-receptiveAccounts
-	^ self performRecursiveCollectOnReceptiveAccountsWithMessage: #receptiveAccounts.! !
-
 !Portfolio methodsFor: 'transactions' stamp: 'NDC 5/9/2018 02:24:43'!
 transactions
 	^ self performRecursiveCollectOnReceptiveAccountsWithMessage: #transactions.! !
 
-!Portfolio methodsFor: 'transactions' stamp: 'MI 5/7/2018 22:07:10'!
+!Portfolio methodsFor: 'transactions' stamp: 'MI 5/10/2018 00:12:57'!
 transactionsOf: anAccount 
 	
-	^ (self manages: anAccount) ifTrue: [^anAccount transactions] ifFalse: [^self error: self class accountNotManagedMessageDescription]! !
+	^ (self manages: anAccount) ifTrue: [anAccount transactions] ifFalse: [self error: self class accountNotManagedMessageDescription]! !
 
 
 !Portfolio methodsFor: 'instance initialization' stamp: 'MI 5/7/2018 21:20:45'!
@@ -455,6 +447,16 @@ initializeWith: aCollectionOfSummarizingAccounts
 
 	accounts := aCollectionOfSummarizingAccounts.
 	^ self! !
+
+
+!Portfolio methodsFor: 'traversal' stamp: 'MI 5/10/2018 00:11:55'!
+performRecursiveCollectOnReceptiveAccountsWithMessage: aMessageSymbolToSend
+	
+	^ accounts inject: (Bag new) into: [:collection :account | collection addAll: (aMessageSymbolToSend sendTo: account). collection ]! !
+
+!Portfolio methodsFor: 'traversal' stamp: 'NDC 5/9/2018 02:24:43'!
+receptiveAccounts
+	^ self performRecursiveCollectOnReceptiveAccountsWithMessage: #receptiveAccounts.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -511,17 +513,6 @@ initialize
 	transactions := OrderedCollection new.! !
 
 
-!ReceptiveAccount methodsFor: 'transactions' stamp: 'NDC 5/9/2018 02:13:34'!
-receptiveAccounts
-
-      | collection |
-
-      collection := Bag new.
-
-	 collection add: self.
-	
-	^collection! !
-
 !ReceptiveAccount methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:37'!
 register: aTransaction
 
@@ -552,3 +543,9 @@ registers: aTtransaction
 
 	^ transactions includes: aTtransaction 
 ! !
+
+
+!ReceptiveAccount methodsFor: 'traversal' stamp: 'MI 5/10/2018 00:19:01'!
+receptiveAccounts
+	
+	^ Bag with: self! !
