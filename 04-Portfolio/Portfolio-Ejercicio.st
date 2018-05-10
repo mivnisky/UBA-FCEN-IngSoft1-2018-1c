@@ -401,7 +401,7 @@ balance
 	self subclassResponsibility ! !
 
 
-!SummarizingAccount methodsFor: 'traversal' stamp: 'NDC 5/9/2018 02:10:51'!
+!SummarizingAccount methodsFor: 'accounts' stamp: 'NDC 5/9/2018 02:10:51'!
 receptiveAccounts
 
 	self subclassResponsibility ! !
@@ -539,7 +539,7 @@ registers: aTtransaction
 ! !
 
 
-!ReceptiveAccount methodsFor: 'traversal' stamp: 'MI 5/10/2018 00:19:01'!
+!ReceptiveAccount methodsFor: 'accounts' stamp: 'MI 5/10/2018 00:19:01'!
 receptiveAccounts
 	
 	^ Bag with: self! !
