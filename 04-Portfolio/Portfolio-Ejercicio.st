@@ -442,10 +442,17 @@ transactionsOf: anAccount
 	^ (self manages: anAccount) ifTrue: [anAccount transactions] ifFalse: [self error: self class accountNotManagedMessageDescription]! !
 
 
-!Portfolio methodsFor: 'instance initialization' stamp: 'MI 5/7/2018 21:20:45'!
+!Portfolio methodsFor: 'instance initialization' stamp: 'NDC 5/10/2018 00:33:47'!
 initializeWith: aCollectionOfSummarizingAccounts
 
+      | containedReceptiveAccounts |
+
 	accounts := aCollectionOfSummarizingAccounts.
+	
+	containedReceptiveAccounts := self receptiveAccounts.
+	
+	containedReceptiveAccounts size = containedReceptiveAccounts asSet size ifFalse: [^self error: self class accountAlreadyManagedErrorMessage ].
+	
 	^ self! !
 
 
@@ -454,7 +461,8 @@ performRecursiveCollectOnReceptiveAccountsWithMessage: aMessageSymbolToSend
 	
 	^ accounts inject: (Bag new) into: [:collection :account | collection addAll: (aMessageSymbolToSend sendTo: account). collection ]! !
 
-!Portfolio methodsFor: 'traversal' stamp: 'NDC 5/9/2018 02:24:43'!
+
+!Portfolio methodsFor: 'accounts' stamp: 'NDC 5/9/2018 02:24:43'!
 receptiveAccounts
 	^ self performRecursiveCollectOnReceptiveAccountsWithMessage: #receptiveAccounts.! !
 
@@ -474,29 +482,15 @@ accountNotManagedMessageDescription
 
 	^ 'This portfolio does not manage the account'! !
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'MI 5/7/2018 21:20:13'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'NDC 5/10/2018 00:36:08'!
 with: aSummarizingAccount1 with: aSummarizingAccount2
-
-	| addedAccounts |
 	
-	addedAccounts := OrderedCollection new.
-	addedAccounts add: aSummarizingAccount1.
-	addedAccounts add: aSummarizingAccount2.
-	
-	^ self withAll: addedAccounts ! !
+	^ self withAll: (Bag with: aSummarizingAccount1 with: aSummarizingAccount2) ! !
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'NDC 5/10/2018 00:08:16'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'NDC 5/10/2018 00:32:22'!
 withAll: aCollectionOfSummarizingAccounts
-
-      | newPortfolio containedReceptiveAccounts |
-
-	newPortfolio := (self new) initializeWith: aCollectionOfSummarizingAccounts.
 	
-	containedReceptiveAccounts := newPortfolio receptiveAccounts.
-	
-	containedReceptiveAccounts size = containedReceptiveAccounts asSet size ifFalse: [^self error: self accountAlreadyManagedErrorMessage ].
-	
-	^newPortfolio! !
+	^self new initializeWith: aCollectionOfSummarizingAccounts! !
 
 
 !classDefinition: #ReceptiveAccount category: #'Portfolio-Ejercicio'!
