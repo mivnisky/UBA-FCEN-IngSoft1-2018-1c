@@ -589,6 +589,13 @@ AccountTransaction subclass: #CertificateOfDeposit
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'MI 5/14/2018 15:41:40'!
+humanReadableDetail
+
+	^ 'Plazo fijo por ', value asString, 
+		' durante ', numberOfDays asString, 
+		' dias a una tna de ', (100*tna) asString, '%'! !
+
 !CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'MI 5/10/2018 21:16:05'!
 initializeFor: aValue during: aNumberOfDays at: anInterestRate on: aReceptiveAccount
 
@@ -596,6 +603,11 @@ initializeFor: aValue during: aNumberOfDays at: anInterestRate on: aReceptiveAcc
 	tna := anInterestRate.
 	numberOfDays := aNumberOfDays.
 	account := aReceptiveAccount! !
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'MI 5/14/2018 15:35:18'!
+investmentEarning
+
+	^ value * tna * numberOfDays / 360! !
 
 !CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'MI 5/10/2018 21:31:32'!
 modifyBalance: aBalance
@@ -1015,6 +1027,11 @@ registers: aTtransaction
 accountSummary
 
 	^ transactions collect: [ :transaction | transaction humanReadableDetail ]! !
+
+!ReceptiveAccount methodsFor: 'consultas' stamp: 'MI 5/14/2018 15:35:25'!
+investmentEarnings
+	
+	^ transactions inject: 0 into: [ :investmentNet :transaction | investmentNet + ((transaction isKindOf: CertificateOfDeposit) ifTrue: [ transaction investmentEarning ] ifFalse: [ 0 ]) ]! !
 
 !ReceptiveAccount methodsFor: 'consultas' stamp: 'MI 5/10/2018 21:35:13'!
 investmentNet
