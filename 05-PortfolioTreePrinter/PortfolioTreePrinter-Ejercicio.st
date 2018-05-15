@@ -526,15 +526,15 @@ investmentNetOf: aReceptiveAccount
 	
 	^ (InvestmentNet of: aReceptiveAccount) value! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'MI 5/14/2018 19:12:25'!
-portofolioTreeOf: aPortfolio namingAccountWith: aDictionary 
-	
-	^ (PortfolioTree of: aPortfolio namingAccountWith: aDictionary) value! !
+!PortfolioTest methodsFor: 'test support' stamp: 'MI 5/15/2018 20:14:46'!
+portofolioTreeOf: aPortfolio namingAccountWith: aDictionary
 
-!PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
-reversePortofolioTreeOf: aPortfolio namingAccountWith: aDictionary 
-	
-	self shouldBeImplemented ! !
+	^ (PortfolioTreePrinter of: aPortfolio namingAccountWith: aDictionary) value! !
+
+!PortfolioTest methodsFor: 'test support' stamp: 'MI 5/15/2018 20:15:26'!
+reversePortofolioTreeOf: aPortfolio namingAccountWith: aDictionary
+
+	^ (ReversePortfolioTreePrinter of: aPortfolio namingAccountWith: aDictionary) value! !
 
 
 !classDefinition: #AccountSummary category: #'PortfolioTreePrinter-Ejercicio'!
@@ -988,38 +988,104 @@ of: anAccount
 	^ self new initializeOf: (anAccount copy)! !
 
 
-!classDefinition: #PortfolioTree category: #'PortfolioTreePrinter-Ejercicio'!
-Object subclass: #PortfolioTree
+!classDefinition: #PortfolioTreePrinter category: #'PortfolioTreePrinter-Ejercicio'!
+Object subclass: #PortfolioTreePrinter
 	instanceVariableNames: 'account accountNames'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!PortfolioTree methodsFor: 'initialization' stamp: 'MI 5/14/2018 19:11:00'!
+!PortfolioTreePrinter methodsFor: 'initialization' stamp: 'MI 5/14/2018 19:11:00'!
 initializeOf: anAccount namingAccountWith: anAccountNameDictionary
 
 	account := anAccount.
 	accountNames := anAccountNameDictionary.! !
 
 
-!PortfolioTree methodsFor: 'query' stamp: 'MI 5/14/2018 19:15:22'!
+!PortfolioTreePrinter methodsFor: 'query' stamp: 'MI 5/15/2018 19:49:34'!
+portfolioValue: aPortfolio
+
+	| result |
+	
+	result := OrderedCollection with: (accountNames at: aPortfolio).
+	
+	aPortfolio accounts inject: result into: 
+		[ :treePrint :account | treePrint addAllLast: ((account answerQuery: self) collect: [ :line | ' ', line ] ). treePrint ].	
+	
+	^ result! !
+
+!PortfolioTreePrinter methodsFor: 'query' stamp: 'MI 5/15/2018 19:21:16'!
+receptiveAccountValue: aReceptiveAccount
+
+	^ OrderedCollection with: (accountNames at: aReceptiveAccount)! !
+
+!PortfolioTreePrinter methodsFor: 'query' stamp: 'MI 5/15/2018 19:29:31'!
 value
 
-	| treePrint |
-	
-	treePrint := OrderedCollection with: (accountNames at: self)
+	^ account answerQuery: self
 	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PortfolioTree class' category: #'PortfolioTreePrinter-Ejercicio'!
-PortfolioTree class
+!classDefinition: 'PortfolioTreePrinter class' category: #'PortfolioTreePrinter-Ejercicio'!
+PortfolioTreePrinter class
 	instanceVariableNames: ''!
 
-!PortfolioTree class methodsFor: 'instance creation' stamp: 'MI 5/14/2018 19:15:42'!
+!PortfolioTreePrinter class methodsFor: 'instance creation' stamp: 'MI 5/15/2018 19:53:03'!
 of: anAccount namingAccountWith: anAccountNameDictionary
 
-	^ self new initializeOf: (anAccount copy) namingAccountWith: anAccountNameDictionary! !
+	^ self new initializeOf: anAccount namingAccountWith: anAccountNameDictionary! !
+
+
+!classDefinition: #ReversePortfolioTreePrinter category: #'PortfolioTreePrinter-Ejercicio'!
+Object subclass: #ReversePortfolioTreePrinter
+	instanceVariableNames: 'account accountNames'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!ReversePortfolioTreePrinter methodsFor: 'initialization' stamp: 'MI 5/15/2018 20:14:02'!
+initializeOf: anAccount namingAccountWith: anAccountNameDictionary
+
+	account := anAccount.
+	accountNames := anAccountNameDictionary.! !
+
+
+!ReversePortfolioTreePrinter methodsFor: 'query' stamp: 'MI 5/15/2018 20:21:03'!
+portfolioValue: aPortfolio
+
+	| result |
+	
+	result := OrderedCollection new.
+	
+	aPortfolio accounts inject: result into: 
+		[ :treePrint :account | treePrint addAllFirst: ((account answerQuery: self) collect: [ :line | ' ', line ] ). treePrint ].
+		
+	result addLast: (accountNames at: aPortfolio).
+	
+	^ result! !
+
+!ReversePortfolioTreePrinter methodsFor: 'query' stamp: 'MI 5/15/2018 20:14:02'!
+receptiveAccountValue: aReceptiveAccount
+
+	^ OrderedCollection with: (accountNames at: aReceptiveAccount)! !
+
+!ReversePortfolioTreePrinter methodsFor: 'query' stamp: 'MI 5/15/2018 20:14:02'!
+value
+
+	^ account answerQuery: self
+	! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ReversePortfolioTreePrinter class' category: #'PortfolioTreePrinter-Ejercicio'!
+ReversePortfolioTreePrinter class
+	instanceVariableNames: ''!
+
+!ReversePortfolioTreePrinter class methodsFor: 'instance creation' stamp: 'MI 5/15/2018 20:14:02'!
+of: anAccount namingAccountWith: anAccountNameDictionary
+
+	^ self new initializeOf: anAccount namingAccountWith: anAccountNameDictionary! !
 
 
 !classDefinition: #SummarizingAccount category: #'PortfolioTreePrinter-Ejercicio'!
@@ -1049,6 +1115,12 @@ balance
 transactions
 
 	self subclassResponsibility ! !
+
+
+!SummarizingAccount methodsFor: 'query' stamp: 'MI 5/15/2018 19:22:33'!
+answerQuery: aQuery
+
+	self subclassResponsibility! !
 
 
 !classDefinition: #Portfolio category: #'PortfolioTreePrinter-Ejercicio'!
@@ -1114,6 +1186,18 @@ treePrintWithNames: anAccountNameDictionary
 		(account treePrintWithNames: anAccountNameDictionary) collect: [ :line | ' ', line ] ]).
 	
 	^ treePrint ! !
+
+
+!Portfolio methodsFor: 'accounts' stamp: 'MI 5/15/2018 18:55:29'!
+accounts
+
+	^ accounts ! !
+
+
+!Portfolio methodsFor: 'query' stamp: 'MI 5/15/2018 19:42:58'!
+answerQuery: aQuery
+
+	^ aQuery portfolioValue: self! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1214,6 +1298,11 @@ registers: aTtransaction
 	^ transactions includes: aTtransaction 
 ! !
 
+
+!ReceptiveAccount methodsFor: 'query' stamp: 'MI 5/15/2018 19:23:11'!
+answerQuery: aQuery
+
+	^ aQuery receptiveAccountValue: self! !
 
 
 !ReceptiveAccount methodsFor: 'printing' stamp: 'MI 5/14/2018 16:49:52'!
