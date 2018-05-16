@@ -843,10 +843,11 @@ Query subclass: #AccountQuery
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!AccountQuery methodsFor: 'initialization' stamp: 'MI 5/15/2018 22:36:24'!
+!AccountQuery methodsFor: 'initialization' stamp: 'MI 5/15/2018 22:56:57'!
 initializeOf: anAccount namingAccountWith: anAccountNameDictionary
 
-	self subclassResponsibility ! !
+	account := anAccount.
+	accountNames := anAccountNameDictionary.! !
 
 
 !AccountQuery methodsFor: 'query' stamp: 'MI 5/15/2018 22:37:22'!
@@ -854,10 +855,15 @@ portfolioValue: aPortfolio
 
 	self subclassResponsibility ! !
 
-!AccountQuery methodsFor: 'query' stamp: 'MI 5/15/2018 22:37:10'!
+!AccountQuery methodsFor: 'query' stamp: 'MI 5/15/2018 22:59:03'!
 receptiveAccountValue: aReceptiveAccount
 
-	self subclassResponsibility ! !
+	^ OrderedCollection with: (accountNames at: aReceptiveAccount)! !
+
+!AccountQuery methodsFor: 'query' stamp: 'MI 5/15/2018 23:00:38'!
+value
+
+	^ account answerQuery: self! !
 
 
 !classDefinition: #PortfolioTreePrinter category: #'PortfolioTreePrinter-Ejercicio'!
@@ -866,13 +872,6 @@ AccountQuery subclass: #PortfolioTreePrinter
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
-
-!PortfolioTreePrinter methodsFor: 'initialization' stamp: 'MI 5/14/2018 19:11:00'!
-initializeOf: anAccount namingAccountWith: anAccountNameDictionary
-
-	account := anAccount.
-	accountNames := anAccountNameDictionary.! !
-
 
 !PortfolioTreePrinter methodsFor: 'query' stamp: 'MI 5/15/2018 22:04:30'!
 portfolioValue: aPortfolio
@@ -884,17 +883,6 @@ portfolioValue: aPortfolio
 	aPortfolio accountsDo: [ :account | result addAllLast: ((account answerQuery: self) collect: [ :line | ' ', line ] ) ]. 
 	
 	^ result! !
-
-!PortfolioTreePrinter methodsFor: 'query' stamp: 'MI 5/15/2018 19:21:16'!
-receptiveAccountValue: aReceptiveAccount
-
-	^ OrderedCollection with: (accountNames at: aReceptiveAccount)! !
-
-!PortfolioTreePrinter methodsFor: 'query' stamp: 'MI 5/15/2018 19:29:31'!
-value
-
-	^ account answerQuery: self
-	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -915,13 +903,6 @@ AccountQuery subclass: #ReversePortfolioTreePrinter
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!ReversePortfolioTreePrinter methodsFor: 'initialization' stamp: 'MI 5/15/2018 20:14:02'!
-initializeOf: anAccount namingAccountWith: anAccountNameDictionary
-
-	account := anAccount.
-	accountNames := anAccountNameDictionary.! !
-
-
 !ReversePortfolioTreePrinter methodsFor: 'query' stamp: 'MI 5/15/2018 22:05:35'!
 portfolioValue: aPortfolio
 
@@ -934,17 +915,6 @@ portfolioValue: aPortfolio
 	result addLast: (accountNames at: aPortfolio).
 	
 	^ result! !
-
-!ReversePortfolioTreePrinter methodsFor: 'query' stamp: 'MI 5/15/2018 20:14:02'!
-receptiveAccountValue: aReceptiveAccount
-
-	^ OrderedCollection with: (accountNames at: aReceptiveAccount)! !
-
-!ReversePortfolioTreePrinter methodsFor: 'query' stamp: 'MI 5/15/2018 20:14:02'!
-value
-
-	^ account answerQuery: self
-	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -965,10 +935,10 @@ Query subclass: #TransactionQuery
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!TransactionQuery methodsFor: 'initialization' stamp: 'MI 5/15/2018 22:38:03'!
+!TransactionQuery methodsFor: 'initialization' stamp: 'MI 5/15/2018 23:03:49'!
 initializeOf: anAccount
 
-	self subclassResponsibility ! !
+	account := anAccount ! !
 
 
 !TransactionQuery methodsFor: 'query' stamp: 'MI 5/15/2018 22:39:15'!
@@ -1003,11 +973,6 @@ TransactionQuery subclass: #AccountSummary
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
-
-!AccountSummary methodsFor: 'initialization' stamp: 'MI 5/14/2018 18:01:33'!
-initializeOf: anAccount
-
-	account := anAccount ! !
 
 
 !AccountSummary methodsFor: 'query' stamp: 'MI 5/14/2018 19:13:06'!
@@ -1058,17 +1023,31 @@ of: anAccount
 	^ self new initializeOf: (anAccount copy)! !
 
 
-!classDefinition: #InvestmentEarnings category: #'PortfolioTreePrinter-Ejercicio'!
-TransactionQuery subclass: #InvestmentEarnings
+!classDefinition: #NumericTransactionQuery category: #'PortfolioTreePrinter-Ejercicio'!
+TransactionQuery subclass: #NumericTransactionQuery
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!InvestmentEarnings methodsFor: 'initialization' stamp: 'MI 5/14/2018 18:42:24'!
-initializeOf: anAccount
+!NumericTransactionQuery methodsFor: 'query' stamp: 'MI 5/15/2018 23:13:50'!
+value
 
-	account := anAccount ! !
+	| result |
+	
+	result := 0.
+	
+	account transactionsDo: [ :transaction | result := result + (transaction answerQuery: self) ].
+
+	^ result! !
+
+
+!classDefinition: #InvestmentEarnings category: #'PortfolioTreePrinter-Ejercicio'!
+NumericTransactionQuery subclass: #InvestmentEarnings
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
 
 
 !InvestmentEarnings methodsFor: 'query' stamp: 'MI 5/14/2018 18:43:10'!
@@ -1091,17 +1070,6 @@ transferWithdrawQueryValue: aTransferWithdraw
 
 	^ 0! !
 
-!InvestmentEarnings methodsFor: 'query' stamp: 'MI 5/15/2018 22:27:57'!
-value
-
-	| investmentEarnings |
-	
-	investmentEarnings := 0.
-	
-	account transactionsDo: [ :transaction | investmentEarnings := investmentEarnings + (transaction answerQuery: self) ].
-
-	^ investmentEarnings! !
-
 !InvestmentEarnings methodsFor: 'query' stamp: 'MI 5/14/2018 18:42:24'!
 withdrawQueryValue: aWithdraw
 
@@ -1120,16 +1088,11 @@ of: anAccount
 
 
 !classDefinition: #InvestmentNet category: #'PortfolioTreePrinter-Ejercicio'!
-TransactionQuery subclass: #InvestmentNet
+NumericTransactionQuery subclass: #InvestmentNet
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
-
-!InvestmentNet methodsFor: 'initialization' stamp: 'MI 5/14/2018 18:39:34'!
-initializeOf: anAccount
-
-	account := anAccount ! !
 
 
 !InvestmentNet methodsFor: 'query' stamp: 'MI 5/14/2018 18:40:28'!
@@ -1152,17 +1115,6 @@ transferWithdrawQueryValue: aTransferWithdraw
 
 	^ 0! !
 
-!InvestmentNet methodsFor: 'query' stamp: 'MI 5/15/2018 22:27:17'!
-value
-
-	| investmentNet |
-	
-	investmentNet := 0.
-	
-	account transactionsDo: [ :transaction | investmentNet := investmentNet + (transaction answerQuery: self) ].
-
-	^ investmentNet ! !
-
 !InvestmentNet methodsFor: 'query' stamp: 'MI 5/14/2018 18:39:34'!
 withdrawQueryValue: aWithdraw
 
@@ -1181,16 +1133,11 @@ of: anAccount
 
 
 !classDefinition: #TransferNet category: #'PortfolioTreePrinter-Ejercicio'!
-TransactionQuery subclass: #TransferNet
+NumericTransactionQuery subclass: #TransferNet
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
-
-!TransferNet methodsFor: 'initialization' stamp: 'MI 5/14/2018 18:21:11'!
-initializeOf: anAccount
-
-	account := anAccount ! !
 
 
 !TransferNet methodsFor: 'query' stamp: 'MI 5/14/2018 18:35:06'!
@@ -1212,17 +1159,6 @@ transferDepositQueryValue: aTransferDeposit
 transferWithdrawQueryValue: aTransferWithdraw
 
 	^ aTransferWithdraw transfer value negated! !
-
-!TransferNet methodsFor: 'query' stamp: 'MI 5/15/2018 22:27:35'!
-value
-
-	| transferNet |
-	
-	transferNet := 0.
-	
-	account transactionsDo: [ :transaction | transferNet := transferNet + (transaction answerQuery: self) ].
-	
-	^ transferNet! !
 
 !TransferNet methodsFor: 'query' stamp: 'MI 5/14/2018 18:36:53'!
 withdrawQueryValue: aWithdraw
