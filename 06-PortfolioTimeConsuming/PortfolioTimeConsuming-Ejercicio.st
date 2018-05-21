@@ -570,23 +570,16 @@ initializeFor: aReceptiveAccount
 	
 	account := aReceptiveAccount ! !
 
-!AccountSummaryWithAllInvestmentInformation methodsFor: 'as yet unclassified' stamp: 'MI 5/17/2018 18:45:34'!
+!AccountSummaryWithAllInvestmentInformation methodsFor: 'as yet unclassified' stamp: 'DK 5/21/2018 20:29:26'!
 lines 
 
-	| lines investmentEarnings sem earnings |
+	| investmentEarnings promise |
 	
-	sem := Semaphore new.
-	
-	[ lines := (AccountSummaryWithInvestmentEarnings for: account) lines.
-		sem signal. ] fork.
-	
-	investmentEarnings := InvestmentNetVisitor for: account.
-	earnings := investmentEarnings value.
-	
-	sem wait.
-	lines add: 'Inversiones por ', earnings printString.
-	
-	 ^ lines! !
+	promise := Promise with: [ (AccountSummaryWithInvestmentEarnings for: account) lines ].
+		
+	investmentEarnings := (InvestmentNetVisitor for: account) value.
+
+	^ promise value add: ('Inversiones por ', investmentEarnings printString); yourself.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -612,23 +605,16 @@ initializeFor: aReceptiveAccount
 	
 	account := aReceptiveAccount ! !
 
-!AccountSummaryWithInvestmentEarnings methodsFor: 'as yet unclassified' stamp: 'MI 5/17/2018 18:43:24'!
+!AccountSummaryWithInvestmentEarnings methodsFor: 'as yet unclassified' stamp: 'DK 5/21/2018 20:26:36'!
 lines 
 
-	| lines investmentEarnings sem earnings |
+	| investmentEarnings promise |
 	
-	sem := Semaphore new.
+	promise := Promise with: [ (AccountSummary for: account) lines ].
 	
-	[ lines := (AccountSummary for: account) lines.
-		sem signal. ] fork.
-	
-	investmentEarnings := InvestmentEarningVisitor for: account.
-	earnings := investmentEarnings value.
-	
-	sem wait.
-	lines add: 'Ganancias por ', earnings printString.
-	
-	 ^ lines! !
+	investmentEarnings := (InvestmentEarningVisitor for: account) value.
+
+	 ^ promise value add: ('Ganancias por ', investmentEarnings printString); yourself.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1265,6 +1251,40 @@ InvestmentNetVisitor class
 for: aReceptiveAccount 
 	
 	^ self new initializeFor: aReceptiveAccount ! !
+
+
+!classDefinition: #Promise category: #'PortfolioTimeConsuming-Ejercicio'!
+Object subclass: #Promise
+	instanceVariableNames: 'semaphore result'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTimeConsuming-Ejercicio'!
+
+!Promise methodsFor: 'as yet unclassified' stamp: 'DK 5/21/2018 19:48:14'!
+initializeWith: aBlock
+
+	semaphore := Semaphore new.
+	
+	[ result := aBlock value.
+	semaphore signal. ] fork.! !
+
+!Promise methodsFor: 'as yet unclassified' stamp: 'DK 5/21/2018 19:49:16'!
+value
+
+	semaphore wait.
+	
+	^ result ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Promise class' category: #'PortfolioTimeConsuming-Ejercicio'!
+Promise class
+	instanceVariableNames: ''!
+
+!Promise class methodsFor: 'as yet unclassified' stamp: 'DK 5/21/2018 19:47:53'!
+with: aBlock
+	
+	^ self new initializeWith: aBlock! !
 
 
 !classDefinition: #SummarizingAccount category: #'PortfolioTimeConsuming-Ejercicio'!
