@@ -399,7 +399,7 @@ test21
 
 !classDefinition: #TicTacToe category: #TicTacToe!
 Object subclass: #TicTacToe
-	instanceVariableNames: 'turn xs os winner'
+	instanceVariableNames: 'turn winner plays'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TicTacToe'!
@@ -409,26 +409,25 @@ OHasWon
 
 	^ winner = #o! !
 
-!TicTacToe methodsFor: 'as yet unclassified' stamp: 'MI 5/24/2018 19:34:18'!
+!TicTacToe methodsFor: 'as yet unclassified' stamp: 'MI 5/28/2018 17:06:23'!
 Os
 
-	^ os! !
+	^ plays at: #o! !
 
 !TicTacToe methodsFor: 'as yet unclassified' stamp: 'MI 5/24/2018 20:32:25'!
 XHasWon
 
 	^ winner = #x! !
 
-!TicTacToe methodsFor: 'as yet unclassified' stamp: 'MI 5/24/2018 19:34:14'!
+!TicTacToe methodsFor: 'as yet unclassified' stamp: 'MI 5/28/2018 17:06:31'!
 Xs
 
-	^ xs! !
+	^ plays at: #x! !
 
-!TicTacToe methodsFor: 'as yet unclassified' stamp: 'MI 5/24/2018 21:13:50'!
+!TicTacToe methodsFor: 'as yet unclassified' stamp: 'MI 5/28/2018 16:54:33'!
 hasCompleteColumn: aSetOfPositions
-	^ (1 to: 3) anySatisfy: [ :y |
-		(aSetOfPositions count: [ :position |
-			position y = y ]) = 3 ].! !
+
+	^ (1 to: 3) anySatisfy: [ :y | (aSetOfPositions count: [ :position | position y = y ]) = 3 ].! !
 
 !TicTacToe methodsFor: 'as yet unclassified' stamp: 'MI 5/24/2018 21:17:28'!
 hasCompleteNorthDiagonal: aSetOfPositions
@@ -458,35 +457,48 @@ isOver
 
 	^ self XHasWon or: [ self OHasWon or: [ self isTied ]]! !
 
-!TicTacToe methodsFor: 'as yet unclassified' stamp: 'MI 5/24/2018 21:39:45'!
+!TicTacToe methodsFor: 'as yet unclassified' stamp: 'MI 5/28/2018 17:07:13'!
 isTied
 
-	^ self XHasWon not and: [ xs size = 5 ] .! !
+	^ self XHasWon not and: [ self Xs size = 5 ] .! !
 
-!TicTacToe methodsFor: 'as yet unclassified' stamp: 'MI 5/24/2018 21:36:41'!
+!TicTacToe methodsFor: 'as yet unclassified' stamp: 'MI 5/28/2018 17:10:53'!
+otherPlayer: aPlayerSymbol
+
+	aPlayerSymbol = #x ifTrue: [ ^ #o ] ifFalse: [ ^ #x ]! !
+
+!TicTacToe methodsFor: 'as yet unclassified' stamp: 'MI 5/28/2018 17:09:59'!
+play: aPlayerSymbol At: aPosition
+
+	self isOver ifTrue: [ self error: self class cannotPlayWhenGameIsOverErrorMessage ].
+	turn = aPlayerSymbol ifFalse: [ self error: (self class notPlayerTurnErrorMessage: aPlayerSymbol) ].
+	((self Os includes: aPosition) or: [ self Xs includes: aPosition ]) ifTrue: [ self error: self class positionTakenErrorMessage ].
+	(plays at: aPlayerSymbol) add: aPosition.
+	(self hasWon: (plays at: aPlayerSymbol)) ifTrue: [ winner _ aPlayerSymbol ].
+	turn _ self otherPlayer: aPlayerSymbol.! !
+
+!TicTacToe methodsFor: 'as yet unclassified' stamp: 'MI 5/28/2018 17:12:53'!
+positionsOf: aPlayer
+	
+	^ plays at: aPlayer ! !
+
+!TicTacToe methodsFor: 'as yet unclassified' stamp: 'MI 5/28/2018 17:12:00'!
 putOAt: aPosition
-	self isOver ifTrue: [ self error: self class cannotPlayWhenGameIsOverErrorMessage ].
-	turn = #o ifFalse: [ self error: self class notOTurnErrorMessage ].
-	((os includes: aPosition) or: [ xs includes: aPosition ]) ifTrue: [ self error: self class positionTakenErrorMessage ].
-	os add: aPosition.
-	(self hasWon: os) ifTrue: [ winner _ #o ].
-	turn _ #x.! !
 
-!TicTacToe methodsFor: 'as yet unclassified' stamp: 'MI 5/24/2018 21:36:41'!
+	self play: #o At: aPosition ! !
+
+!TicTacToe methodsFor: 'as yet unclassified' stamp: 'MI 5/28/2018 17:12:21'!
 putXAt: aPosition
-	self isOver ifTrue: [ self error: self class cannotPlayWhenGameIsOverErrorMessage ].
-	turn = #x ifFalse: [ self error: self class notXTurnErrorMessage ].
-	((os includes: aPosition) or: [ xs includes: aPosition ]) ifTrue: [ self error: self class positionTakenErrorMessage ].
-	xs add: aPosition.
-	(self hasWon: xs) ifTrue: [ winner _ #x ].
-	turn _ #o.! !
+
+	self play: #x At: aPosition ! !
 
 
-!TicTacToe methodsFor: 'instance initialization' stamp: 'MI 5/24/2018 19:46:09'!
+!TicTacToe methodsFor: 'instance initialization' stamp: 'MI 5/28/2018 17:05:55'!
 initialize
 
-	xs := Set new.
-	os := Set new.
+	plays := Dictionary new.
+	plays at: #x put: Set new.
+	plays at: #o put: Set new.
 	turn := #x.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
@@ -500,15 +512,20 @@ cannotPlayWhenGameIsOverErrorMessage
 
 	^ 'El juego ya terminó'! !
 
-!TicTacToe class methodsFor: 'as yet unclassified' stamp: 'MI 5/24/2018 19:50:03'!
+!TicTacToe class methodsFor: 'as yet unclassified' stamp: 'MI 5/28/2018 16:40:53'!
 notOTurnErrorMessage
 
-	^ 'No es el turno de O!!'! !
+	^ self notPlayerTurnErrorMessage: #o! !
 
-!TicTacToe class methodsFor: 'as yet unclassified' stamp: 'MI 5/24/2018 19:45:17'!
+!TicTacToe class methodsFor: 'as yet unclassified' stamp: 'MI 5/28/2018 16:40:12'!
+notPlayerTurnErrorMessage: aPlayer
+
+	^ 'No es el turno de ', aPlayer, '!!'! !
+
+!TicTacToe class methodsFor: 'as yet unclassified' stamp: 'MI 5/28/2018 16:41:07'!
 notXTurnErrorMessage
 
-	^ 'No es el turno de X!!'! !
+	^ self notPlayerTurnErrorMessage: #x! !
 
 !TicTacToe class methodsFor: 'as yet unclassified' stamp: 'MI 5/24/2018 19:52:53'!
 positionTakenErrorMessage
