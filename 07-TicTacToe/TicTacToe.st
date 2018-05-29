@@ -5,76 +5,59 @@ TestCase subclass: #TicTacToeTests
 	poolDictionaries: ''
 	category: 'TicTacToe'!
 
-!TicTacToeTests methodsFor: 'tests' stamp: 'MI 5/29/2018 17:53:42'!
-test01EmptyGameHasNoPlays
-	| game |
-	game _ TicTacToe new.
-	self
-		assertXHasPlayed: 0
-		timesInGame: game.
-	self
-		assertOHasPlayed: 0
-		timesInGame: game.! !
+!TicTacToeTests methodsFor: 'tests' stamp: 'MI 5/29/2018 18:33:08'!
+test01NewGameHasNoPlays
 
-!TicTacToeTests methodsFor: 'tests' stamp: 'MI 5/29/2018 17:56:18'!
-test02PlayerXCanPlayFirst
 	| game |
+	
+	game _ TicTacToe new.
+	self assertXHasPlayed: 0 timesInGame: game.
+	self assertOHasPlayed: 0 timesInGame: game.! !
+
+!TicTacToeTests methodsFor: 'tests' stamp: 'MI 5/29/2018 18:33:59'!
+test02PlayerXCanPlayFirst
+
+	| game |
+	
 	game _ TicTacToe new.
 	game putXAt: 1 @ 1.
-	self
-		assertXHasPlayed: 1
-		timesInGame: game.
-	self
-		assertXHasPlayedInPosition: 1 @ 1
-		inGame: game.
-	self
-		assertOHasPlayed: 0
-		timesInGame: game.! !
+	self assertXHasPlayed: 1 timesInGame: game.
+	self assertXHasPlayedInPosition: 1 @ 1 inGame: game.
+	self assertOHasPlayed: 0 timesInGame: game.! !
 
-!TicTacToeTests methodsFor: 'tests' stamp: 'MI 5/29/2018 17:56:31'!
+!TicTacToeTests methodsFor: 'tests' stamp: 'MI 5/29/2018 18:34:26'!
 test03PlayerOCanPlaySecond
+
 	| game |
+	
 	game _ TicTacToe new.
 	game putXAt: 2 @ 2.
 	game putOAt: 1 @ 1.
-	self
-		assertOHasPlayed: 1
-		timesInGame: game.
-	self
-		assertOHasPlayedInPosition: 1 @ 1
-		inGame: game.
-	self
-		assertXHasPlayed: 1
-		timesInGame: game.
-	self
-		assertXHasPlayedInPosition: 2 @ 2
-		inGame: game.! !
+	self assertOHasPlayed: 1 timesInGame: game.
+	self assertOHasPlayedInPosition: 1 @ 1 inGame: game.
+	self assertXHasPlayed: 1 timesInGame: game.
+	self assertXHasPlayedInPosition: 2 @ 2 inGame: game.! !
 
-!TicTacToeTests methodsFor: 'tests' stamp: 'MI 5/29/2018 17:55:32'!
+!TicTacToeTests methodsFor: 'tests' stamp: 'MI 5/29/2018 18:35:00'!
 test04PlayerXCannotPlayTwoTimesInARow
+
 	| game |
+	
 	game _ TicTacToe new.
 	game putXAt: 1 @ 1.
-	self
-		should: [ game putXAt: 2 @ 2 ]
+	self should: [ game putXAt: 2 @ 2 ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
-			self
-				assert: TicTacToe notXTurnErrorMessage
-				equals: anError messageText.
-			self
-				assertXHasPlayed: 1
-				timesInGame: game.
-			self
-				assertXHasPlayedInPosition: 1 @ 1
-				inGame: game.
-			self
-				assertOHasPlayed: 0
-				timesInGame: game ].! !
+			self assert: TicTacToe notXTurnErrorMessage equals: anError messageText.
+			self assertXHasPlayed: 1 timesInGame: game.
+			self assertXHasPlayedInPosition: 1 @ 1 inGame: game.
+			self assertOHasPlayed: 0 timesInGame: game ].! !
 
-!TicTacToeTests methodsFor: 'tests' stamp: 'MI 5/29/2018 17:55:55'!
+!TicTacToeTests methodsFor: 'tests' stamp: 'MI 5/29/2018 18:35:33'!
 test05PlayerOCannotPlayTwoTimesInARow
+
 	| game |
+	
 	game _ TicTacToe new.
 	game putXAt: 1 @ 1.
 	game putOAt: 2 @ 2.
@@ -82,25 +65,17 @@ test05PlayerOCannotPlayTwoTimesInARow
 		should: [ game putOAt: 3 @ 3 ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
-			self
-				assert: TicTacToe notOTurnErrorMessage
-				equals: anError messageText.
-			self
-				assertXHasPlayed: 1
-				timesInGame: game.
-			self
-				assertXHasPlayedInPosition: 1 @ 1
-				inGame: game.
-			self
-				assertOHasPlayed: 1
-				timesInGame: game.
-			self
-				assertOHasPlayedInPosition: 2 @ 2
-				inGame: game ].! !
+			self assert: TicTacToe notOTurnErrorMessage equals: anError messageText.
+			self assertXHasPlayed: 1 timesInGame: game.
+			self assertXHasPlayedInPosition: 1 @ 1 inGame: game.
+			self assertOHasPlayed: 1 timesInGame: game.
+			self assertOHasPlayedInPosition: 2 @ 2 inGame: game ].! !
 
-!TicTacToeTests methodsFor: 'tests' stamp: 'MI 5/29/2018 17:57:43'!
+!TicTacToeTests methodsFor: 'tests' stamp: 'MI 5/29/2018 18:36:05'!
 test06PlayerXCannotPlayInAPositionAlreadyOccupiedByItself
+
 	| game |
+	
 	game _ TicTacToe new.
 	game putXAt: 1 @ 1.
 	game putOAt: 2 @ 2.
@@ -108,21 +83,11 @@ test06PlayerXCannotPlayInAPositionAlreadyOccupiedByItself
 		should: [ game putXAt: 1 @ 1 ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
-			self
-				assert: TicTacToe positionTakenErrorMessage
-				equals: anError messageText.
-			self
-				assertXHasPlayed: 1
-				timesInGame: game.
-			self
-				assertXHasPlayedInPosition: 1 @ 1
-				inGame: game.
-			self
-				assertOHasPlayed: 1
-				timesInGame: game.
-			self
-				assertOHasPlayedInPosition: 2 @ 2
-				inGame: game ].! !
+			self assert: TicTacToe positionTakenErrorMessage equals: anError messageText.
+			self assertXHasPlayed: 1 timesInGame: game.
+			self assertXHasPlayedInPosition: 1 @ 1 inGame: game.
+			self assertOHasPlayed: 1 timesInGame: game.
+			self assertOHasPlayedInPosition: 2 @ 2 inGame: game ].! !
 
 !TicTacToeTests methodsFor: 'tests' stamp: 'MI 5/29/2018 17:58:51'!
 test07PlayerXCannotPlayInAPositionAlreadyOccupiedByPlayerO
