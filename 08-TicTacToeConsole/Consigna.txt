@@ -47,6 +47,8 @@ Estado: Jugando X
 X marcó en 3@1
 Estado: Juego terminado - Ganó X!
 
+Tener en cuenta que también debe soportar que gane O y que el juego salga empatado.
+
 En la vista debería verse el estado del tablero:
 Acciones: 
 ticTacToe markWithXAt: 2@2
@@ -56,6 +58,7 @@ Vista:
  |X| 
 -----
  | | 
+Playing O
  
 Acciones: 
 ticTacToe markWithXAt: 2@2
@@ -66,6 +69,7 @@ Vista:
  |X| 
 -----
 O| | 
+Playing X
 
 Acciones: 
 ticTacToe markWithXAt: 2@2
@@ -77,6 +81,7 @@ X| |
  |X| 
 -----
 O| | 
+Playing O
 
 Acciones: (juego completo)
 ticTacToe markWithXAt: 2@2
@@ -90,4 +95,8 @@ X| |
 O|X| 
 -----
 O| |X
+X Won!
+
+Tener en cuenta que también debe soportar que gane O y que el juego salga empatado.
+También recordar que se puede usar una consola y vista del juego al mismo tiempo.
 
