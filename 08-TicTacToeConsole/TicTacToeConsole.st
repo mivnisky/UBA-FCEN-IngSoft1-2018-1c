@@ -1,9 +1,159 @@
-!classDefinition: #TicTacToeTest category: #TicTacToe!
+!classDefinition: #TicTacToeLogTest category: #TicTacToeConsole!
+TestCase subclass: #TicTacToeLogTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TicTacToeConsole'!
+
+!TicTacToeLogTest methodsFor: 'testing' stamp: 'MI 6/1/2018 15:35:00'!
+test01LogStartsEmpty
+
+	| game log |
+	
+	game := TicTacToe new.
+	
+	log := TicTacToeLog with: game.
+	
+	self assert: log lines isEmpty! !
+
+!TicTacToeLogTest methodsFor: 'testing' stamp: 'MI 6/1/2018 15:40:44'!
+test02LogLogsXPlay
+
+	| game log lines |
+	
+	game := TicTacToe new.
+	
+	log := TicTacToeLog with: game.
+	
+	game markWithXAt: 2@2.
+	
+	lines := log lines.
+	
+	self assert: lines size = 2.
+	self assert: (lines at: 1) = 'X marcó en 2@2'.
+	self assert: (lines at: 2) = 'Estado: Jugando O'.! !
+
+!TicTacToeLogTest methodsFor: 'testing' stamp: 'MI 6/1/2018 15:40:56'!
+test03LogLogsOPlay
+
+	| game log lines |
+	
+	game := TicTacToe new.
+	
+	log := TicTacToeLog with: game.
+	
+	game markWithXAt: 2@2.
+	game markWithOAt: 1@1.
+	
+	lines := log lines.
+	
+	self assert: lines size = 4.
+	self assert: (lines at: 1) = 'X marcó en 2@2'.
+	self assert: (lines at: 2) = 'Estado: Jugando O'.
+	self assert: (lines at: 3) = 'O marcó en 1@1'.
+	self assert: (lines at: 4) = 'Estado: Jugando X'.! !
+
+!TicTacToeLogTest methodsFor: 'testing' stamp: 'MI 6/1/2018 15:41:15'!
+test04LogLogsXWin
+
+	| game log lines |
+	
+	game := TicTacToe new.
+	
+	log := TicTacToeLog with: game.
+	
+	game markWithXAt: 2@2.
+	game markWithOAt: 1@1.
+	game markWithXAt: 2@1.
+	game markWithOAt: 3@3.
+	game markWithXAt: 2@3.
+	
+	lines := log lines.
+	
+	self assert: lines size = 10.
+	self assert: (lines at: 1) = 'X marcó en 2@2'.
+	self assert: (lines at: 2) = 'Estado: Jugando O'.
+	self assert: (lines at: 3) = 'O marcó en 1@1'.
+	self assert: (lines at: 4) = 'Estado: Jugando X'.
+	self assert: (lines at: 5) = 'X marcó en 2@1'.
+	self assert: (lines at: 6) = 'Estado: Jugando O'.
+	self assert: (lines at: 7) = 'O marcó en 3@3'.
+	self assert: (lines at: 8) = 'Estado: Jugando X'.
+	self assert: (lines at: 9) = 'X marcó en 2@3'.
+	self assert: (lines at: 10) = 'Juego terminado - Ganó X!!'.! !
+
+!TicTacToeLogTest methodsFor: 'testing' stamp: 'MI 6/1/2018 15:41:27'!
+test05LogLogsOWin
+
+	| game log lines |
+	
+	game := TicTacToe new.
+	
+	log := TicTacToeLog with: game.
+	
+	game markWithXAt: 3@2.
+	game markWithOAt: 1@1.
+	game markWithXAt: 2@1.
+	game markWithOAt: 3@3.
+	game markWithXAt: 2@3.
+	game markWithOAt: 2@2.
+	
+	lines := log lines.
+	
+	self assert: lines size = 12.
+	self assert: (lines at: 1) = 'X marcó en 3@2'.
+	self assert: (lines at: 2) = 'Estado: Jugando O'.
+	self assert: (lines at: 3) = 'O marcó en 1@1'.
+	self assert: (lines at: 4) = 'Estado: Jugando X'.
+	self assert: (lines at: 5) = 'X marcó en 2@1'.
+	self assert: (lines at: 6) = 'Estado: Jugando O'.
+	self assert: (lines at: 7) = 'O marcó en 3@3'.
+	self assert: (lines at: 8) = 'Estado: Jugando X'.
+	self assert: (lines at: 9) = 'X marcó en 2@3'.
+	self assert: (lines at: 10) = 'Estado: Jugando O'.
+	self assert: (lines at: 11) = 'O marcó en 2@2'.
+	self assert: (lines at: 12) = 'Juego terminado - Ganó O!!'.! !
+
+!TicTacToeLogTest methodsFor: 'testing' stamp: 'MI 6/1/2018 15:41:38'!
+test06LogLogsGameTie
+
+	| game log lines |
+	
+	game := TicTacToe new.
+	
+	log := TicTacToeLog with: game.
+	
+	game markAll: { 2@2. 1@1. 1@3. 3@1. 2@1. 2@3. 1@2. 3@2. 3@3 }.
+	
+	lines := log lines.
+	
+	self assert: lines size = 18.
+	self assert: (lines at: 1) = 'X marcó en 2@2'.
+	self assert: (lines at: 2) = 'Estado: Jugando O'.
+	self assert: (lines at: 3) = 'O marcó en 1@1'.
+	self assert: (lines at: 4) = 'Estado: Jugando X'.
+	self assert: (lines at: 5) = 'X marcó en 1@3'.
+	self assert: (lines at: 6) = 'Estado: Jugando O'.
+	self assert: (lines at: 7) = 'O marcó en 3@1'.
+	self assert: (lines at: 8) = 'Estado: Jugando X'.
+	self assert: (lines at: 9) = 'X marcó en 2@1'.
+	self assert: (lines at: 10) = 'Estado: Jugando O'.
+	self assert: (lines at: 11) = 'O marcó en 2@3'.
+	self assert: (lines at: 12) = 'Estado: Jugando X'.
+	self assert: (lines at: 13) = 'X marcó en 1@2'.
+	self assert: (lines at: 14) = 'Estado: Jugando O'.
+	self assert: (lines at: 15) = 'O marcó en 3@2'.
+	self assert: (lines at: 16) = 'Estado: Jugando X'.
+	self assert: (lines at: 17) = 'X marcó en 3@3'.
+	self assert: (lines at: 18) = 'Juego terminado - Empate!!'.! !
+
+
+!classDefinition: #TicTacToeTest category: #TicTacToeConsole!
 TestCase subclass: #TicTacToeTest
 	instanceVariableNames: 'game'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TicTacToe'!
+	category: 'TicTacToeConsole'!
 
 !TicTacToeTest methodsFor: 'testing' stamp: 'HAW 10/27/2017 17:25:54'!
 functionalException
@@ -409,18 +559,150 @@ assertXWon
 ! !
 
 
-!classDefinition: #TicTacToe category: #TicTacToe!
-Object subclass: #TicTacToe
-	instanceVariableNames: 'state playerOPositions playerXPositions'
+!classDefinition: #TicTacToeViewTest category: #TicTacToeConsole!
+TestCase subclass: #TicTacToeViewTest
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TicTacToe'!
+	category: 'TicTacToeConsole'!
 
-!TicTacToe methodsFor: 'initialization' stamp: 'HAW 10/25/2017 16:08:04'!
+!TicTacToeViewTest methodsFor: 'testing' stamp: 'MI 6/1/2018 15:44:20'!
+test01ViewDisplaysEmptyGameWhenItStarts
+
+	| game view lines |
+	
+	game := TicTacToe new.
+	
+	view := TicTacToeView with: game.
+	
+	lines := view lines.
+	self assert: lines size = 6.
+	self assert: (lines at: 1) = ' | | '.
+	self assert: (lines at: 2) = '-----'.
+	self assert: (lines at: 3) = ' | | '.
+	self assert: (lines at: 4) = '-----'.
+	self assert: (lines at: 5) = ' | | '.
+	self assert: (lines at: 6) = 'Playing X'.! !
+
+!TicTacToeViewTest methodsFor: 'testing' stamp: 'MI 6/1/2018 15:44:40'!
+test02ViewDisplaysXPlayAndOPlayingStatus
+
+	| game view lines |
+	
+	game := TicTacToe new.	
+	view := TicTacToeView with: game.
+	
+	game markWithXAt: 2@2.
+	
+	lines := view lines.
+	self assert: lines size = 6.
+	self assert: (lines at: 1) = ' | | '.
+	self assert: (lines at: 2) = '-----'.
+	self assert: (lines at: 3) = ' |X| '.
+	self assert: (lines at: 4) = '-----'.
+	self assert: (lines at: 5) = ' | | '.
+	self assert: (lines at: 6) = 'Playing O'.! !
+
+!TicTacToeViewTest methodsFor: 'testing' stamp: 'MI 6/1/2018 15:44:56'!
+test03ViewDisplaysOPlayAndXPlayingStatus
+
+	| game view lines |
+	
+	game := TicTacToe new.	
+	view := TicTacToeView with: game.
+	
+	game markWithXAt: 2@2.
+	game markWithOAt: 1@1.
+	
+	lines := view lines.
+	self assert: lines size = 6.
+	self assert: (lines at: 1) = 'O| | '.
+	self assert: (lines at: 2) = '-----'.
+	self assert: (lines at: 3) = ' |X| '.
+	self assert: (lines at: 4) = '-----'.
+	self assert: (lines at: 5) = ' | | '.
+	self assert: (lines at: 6) = 'Playing X'.! !
+
+!TicTacToeViewTest methodsFor: 'testing' stamp: 'MI 6/1/2018 15:45:10'!
+test04ViewDisplaysXWin
+
+	| game view lines |
+	
+	game := TicTacToe new.	
+	view := TicTacToeView with: game.
+	
+	game markWithXAt: 2@2.
+	game markWithOAt: 1@1.
+	game markWithXAt: 2@1.
+	game markWithOAt: 3@3.
+	game markWithXAt: 2@3.
+	
+	lines := view lines.
+	self assert: lines size = 6.
+	self assert: (lines at: 1) = 'O|X| '.
+	self assert: (lines at: 2) = '-----'.
+	self assert: (lines at: 3) = ' |X| '.
+	self assert: (lines at: 4) = '-----'.
+	self assert: (lines at: 5) = ' |X|O'.
+	self assert: (lines at: 6) = 'X Won!!'.! !
+
+!TicTacToeViewTest methodsFor: 'testing' stamp: 'MI 6/1/2018 15:45:19'!
+test05ViewDisplaysOWin
+
+	| game view lines |
+	
+	game := TicTacToe new.	
+	view := TicTacToeView with: game.
+	
+	game markWithXAt: 3@2.
+	game markWithOAt: 1@1.
+	game markWithXAt: 2@1.
+	game markWithOAt: 3@3.
+	game markWithXAt: 2@3.
+	game markWithOAt: 2@2.
+
+	lines := view lines.
+	self assert: lines size = 6.
+	self assert: (lines at: 1) = 'O|X| '.
+	self assert: (lines at: 2) = '-----'.
+	self assert: (lines at: 3) = ' |O|X'.
+	self assert: (lines at: 4) = '-----'.
+	self assert: (lines at: 5) = ' |X|O'.
+	self assert: (lines at: 6) = 'O Won!!'.! !
+
+!TicTacToeViewTest methodsFor: 'testing' stamp: 'MI 6/1/2018 15:45:35'!
+test06ViewDisplaysGameTied
+
+	| game view lines |
+	
+	game := TicTacToe new.	
+	view := TicTacToeView with: game.
+	
+	game markAll: { 2@2. 1@1. 1@3. 3@1. 2@1. 2@3. 1@2. 3@2. 3@3 }.
+
+	lines := view lines.
+	self assert: lines size = 6.
+	self assert: (lines at: 1) = 'O|X|O'.
+	self assert: (lines at: 2) = '-----'.
+	self assert: (lines at: 3) = 'X|X|O'.
+	self assert: (lines at: 4) = '-----'.
+	self assert: (lines at: 5) = 'X|O|X'.
+	self assert: (lines at: 6) = 'Game Tied!!'.! !
+
+
+!classDefinition: #TicTacToe category: #TicTacToeConsole!
+Object subclass: #TicTacToe
+	instanceVariableNames: 'state playerOPositions playerXPositions observers'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TicTacToeConsole'!
+
+!TicTacToe methodsFor: 'initialization' stamp: 'MI 5/31/2018 19:53:50'!
 initialize
 	playerXPositions _ OrderedCollection new.
 	playerOPositions _ OrderedCollection new.
-	state _ PlayingX for: self.! !
+	state _ PlayingX for: self.
+	observers := OrderedCollection new.! !
 
 
 !TicTacToe methodsFor: 'marking board' stamp: 'HAW 5/31/2018 18:49:39'!
@@ -433,14 +715,14 @@ markAt: aPosition
 
 	^state markAt: aPosition ! !
 
-!TicTacToe methodsFor: 'marking board' stamp: 'HAW 10/27/2017 10:30:17'!
+!TicTacToe methodsFor: 'marking board' stamp: 'MI 5/31/2018 20:43:34'!
 markWithOAt: aPosition
 
 	self assertIsInBoardBounds: aPosition.
 	
 	state markWithOAt: aPosition.! !
 
-!TicTacToe methodsFor: 'marking board' stamp: 'HAW 10/27/2017 10:24:49'!
+!TicTacToe methodsFor: 'marking board' stamp: 'MI 5/31/2018 20:43:39'!
 markWithXAt: aPosition
 
 	self assertIsInBoardBounds: aPosition.
@@ -448,12 +730,12 @@ markWithXAt: aPosition
 	state markWithXAt: aPosition.! !
 
 
-!TicTacToe methodsFor: 'marking board - private' stamp: 'HAW 10/25/2017 15:41:25'!
+!TicTacToe methodsFor: 'marking board - private' stamp: 'MI 5/31/2018 20:47:50'!
 add: aPosition to: positions nextPlayerState: nextPlayingState winnerState: winnerState
 
 	positions add: aPosition.
-	state := (self stateAfterAddingTo: positions with: nextPlayingState and: winnerState) for: self
-	! !
+	state := (self stateAfterAddingTo: positions with: nextPlayingState and: winnerState) for: self.
+	self notifySuscribersWithNewPosition: aPosition! !
 
 !TicTacToe methodsFor: 'marking board - private' stamp: 'HAW 10/25/2017 15:35:08'!
 assertIsFree: aPosition
@@ -596,9 +878,20 @@ shouldBeTiedWhenNoOneWon
 
 	^ playerXPositions size = 5 and: [ playerOPositions size = 4 ].! !
 
+
+!TicTacToe methodsFor: 'observers' stamp: 'MI 5/31/2018 18:50:57'!
+attach: anObserver
+
+	observers add: anObserver! !
+
+!TicTacToe methodsFor: 'observers' stamp: 'MI 5/31/2018 20:49:22'!
+notifySuscribersWithNewPosition: aPosition
+
+	observers do: [ :observer | (state messageToBroadcast) sendTo: observer with: aPosition ]! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'TicTacToe class' category: #TicTacToe!
+!classDefinition: 'TicTacToe class' category: #TicTacToeConsole!
 TicTacToe class
 	instanceVariableNames: ''!
 
@@ -628,12 +921,210 @@ positionTakenErrorMessage
 	^'Position taken'! !
 
 
-!classDefinition: #TicTacToeState category: #TicTacToe!
+!classDefinition: #TicTacToeObserver category: #TicTacToeConsole!
+Object subclass: #TicTacToeObserver
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TicTacToeConsole'!
+
+!TicTacToeObserver methodsFor: 'notifications' stamp: 'MI 6/1/2018 15:52:42'!
+pushGameTied: aPosition
+
+	self subclassResponsibility ! !
+
+!TicTacToeObserver methodsFor: 'notifications' stamp: 'MI 6/1/2018 15:52:09'!
+pushOWon: aPosition
+
+	self subclassResponsibility ! !
+
+!TicTacToeObserver methodsFor: 'notifications' stamp: 'MI 6/1/2018 15:52:38'!
+pushPlayingO: aPosition
+
+	self subclassResponsibility ! !
+
+!TicTacToeObserver methodsFor: 'notifications' stamp: 'MI 6/1/2018 15:52:36'!
+pushPlayingX: aPosition
+
+	self subclassResponsibility ! !
+
+!TicTacToeObserver methodsFor: 'notifications' stamp: 'MI 6/1/2018 15:52:16'!
+pushXWon: aPosition
+
+	self subclassResponsibility ! !
+
+
+!TicTacToeObserver methodsFor: 'instance initialization' stamp: 'MI 6/1/2018 15:53:36'!
+initializeWith: aTicTacToeGame
+
+	self subclassResponsibility ! !
+
+
+!TicTacToeObserver methodsFor: 'display' stamp: 'MI 6/1/2018 15:58:46'!
+lines
+	
+	self subclassResponsibility ! !
+
+
+!classDefinition: #TicTacToeLog category: #TicTacToeConsole!
+TicTacToeObserver subclass: #TicTacToeLog
+	instanceVariableNames: 'lines'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TicTacToeConsole'!
+
+!TicTacToeLog methodsFor: 'instance initialization' stamp: 'MI 6/1/2018 15:53:54'!
+initializeWith: aTicTacToeGame
+
+	aTicTacToeGame attach: self.
+	lines := OrderedCollection new.! !
+
+
+!TicTacToeLog methodsFor: 'notifications' stamp: 'MI 6/1/2018 15:51:10'!
+pushGameTied: aPosition
+
+	self logPosition: aPosition forPlayer: 'X'.
+	lines add: 'Juego terminado - Empate!!'.! !
+
+!TicTacToeLog methodsFor: 'notifications' stamp: 'MI 6/1/2018 15:51:15'!
+pushOWon: aPosition
+
+	self logPosition: aPosition forPlayer: 'O'.
+	lines add: 'Juego terminado - Ganó O!!'.! !
+
+!TicTacToeLog methodsFor: 'notifications' stamp: 'MI 6/1/2018 15:51:23'!
+pushPlayingO: aPosition
+	
+	self logPosition: aPosition forPlayer: 'X'.
+	lines add: 'Estado: Jugando O'.! !
+
+!TicTacToeLog methodsFor: 'notifications' stamp: 'MI 6/1/2018 15:51:29'!
+pushPlayingX: aPosition
+	
+	self logPosition: aPosition forPlayer: 'O'.
+	lines add: 'Estado: Jugando X'.! !
+
+!TicTacToeLog methodsFor: 'notifications' stamp: 'MI 6/1/2018 15:51:35'!
+pushXWon: aPosition
+
+	self logPosition: aPosition forPlayer: 'X'.
+	lines add: 'Juego terminado - Ganó X!!'.! !
+
+
+!TicTacToeLog methodsFor: 'logging - private' stamp: 'MI 6/1/2018 15:51:01'!
+logPosition: aPosition forPlayer: aPlayer
+	
+	lines add: aPlayer, ' marcó en ', aPosition printString.! !
+
+
+!TicTacToeLog methodsFor: 'display' stamp: 'MI 5/31/2018 18:41:42'!
+lines
+
+	^ lines! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'TicTacToeLog class' category: #TicTacToeConsole!
+TicTacToeLog class
+	instanceVariableNames: ''!
+
+!TicTacToeLog class methodsFor: 'instance creation' stamp: 'MI 5/31/2018 18:39:43'!
+with: aTicTacToeGame
+	
+	^ super new initializeWith: aTicTacToeGame! !
+
+
+!classDefinition: #TicTacToeView category: #TicTacToeConsole!
+TicTacToeObserver subclass: #TicTacToeView
+	instanceVariableNames: 'rows status'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TicTacToeConsole'!
+
+!TicTacToeView methodsFor: 'notifications' stamp: 'MI 6/1/2018 15:07:55'!
+pushGameTied: aPosition
+	
+	self putCharacter: $X atPosition: aPosition.
+	status := 'Game Tied!!'.! !
+
+!TicTacToeView methodsFor: 'notifications' stamp: 'MI 6/1/2018 15:07:48'!
+pushOWon: aPosition 
+	
+	self putCharacter: $O atPosition: aPosition.
+	status := 'O Won!!'.! !
+
+!TicTacToeView methodsFor: 'notifications' stamp: 'MI 6/1/2018 15:07:38'!
+pushPlayingO: aPosition
+
+	self putCharacter: $X atPosition: aPosition.
+	status := 'Playing O'.
+	
+
+	! !
+
+!TicTacToeView methodsFor: 'notifications' stamp: 'MI 6/1/2018 15:07:25'!
+pushPlayingX: aPosition
+
+	self putCharacter: $O atPosition: aPosition.
+	status := 'Playing X'.
+	
+
+	! !
+
+!TicTacToeView methodsFor: 'notifications' stamp: 'MI 6/1/2018 15:07:16'!
+pushXWon: aPosition
+
+	self putCharacter: $X atPosition: aPosition.
+	status := 'X Won!!'.! !
+
+
+!TicTacToeView methodsFor: 'instance initialization' stamp: 'MI 6/1/2018 14:46:40'!
+initializeWith: aTicTacToeGame
+
+	aTicTacToeGame attach: self.
+	rows := Array with: ' | | ' copy with: ' | | ' copy with: ' | | ' copy.
+	status := 'Playing X'.! !
+
+
+!TicTacToeView methodsFor: 'display' stamp: 'MI 6/1/2018 14:18:20'!
+lines
+
+	| lines | 
+	
+	lines := OrderedCollection new.
+	lines add: (rows at: 1).
+	lines add: '-----'.
+	lines add: (rows at: 2).
+	lines add: '-----'.
+	lines add: (rows at: 3).
+	lines add: status.
+	
+	^ lines! !
+
+
+!TicTacToeView methodsFor: 'view - private' stamp: 'MI 6/1/2018 15:06:39'!
+putCharacter: aCharacter atPosition: aPosition
+
+	(rows at: aPosition y) at: 2 * aPosition x - 1 put: aCharacter.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'TicTacToeView class' category: #TicTacToeConsole!
+TicTacToeView class
+	instanceVariableNames: ''!
+
+!TicTacToeView class methodsFor: 'as yet unclassified' stamp: 'MI 6/1/2018 14:16:02'!
+with: aTicTacToeGame
+	
+	^ self new initializeWith: aTicTacToeGame! !
+
+
+!classDefinition: #TicTacToeState category: #TicTacToeConsole!
 Object subclass: #TicTacToeState
 	instanceVariableNames: 'game'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TicTacToe'!
+	category: 'TicTacToeConsole'!
 
 !TicTacToeState methodsFor: 'testing game result' stamp: 'HAW 10/26/2017 12:28:07'!
 hasPlayerOWon
@@ -688,7 +1179,7 @@ initializeFor: aGame
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'TicTacToeState class' category: #TicTacToe!
+!classDefinition: 'TicTacToeState class' category: #TicTacToeConsole!
 TicTacToeState class
 	instanceVariableNames: ''!
 
@@ -698,12 +1189,12 @@ for: aTicTacToe
 	^self new initializeFor: aTicTacToe ! !
 
 
-!classDefinition: #GameOverState category: #TicTacToe!
+!classDefinition: #GameOverState category: #TicTacToeConsole!
 TicTacToeState subclass: #GameOverState
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TicTacToe'!
+	category: 'TicTacToeConsole'!
 
 !GameOverState methodsFor: 'testing game result' stamp: 'HAW 10/26/2017 11:53:57'!
 isOver
@@ -736,12 +1227,12 @@ markWithXAt: aPosition
 	game error: game class canNotPlayWhenGameIsOverErrorMessage.! !
 
 
-!classDefinition: #GameTied category: #TicTacToe!
+!classDefinition: #GameTied category: #TicTacToeConsole!
 GameOverState subclass: #GameTied
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TicTacToe'!
+	category: 'TicTacToeConsole'!
 
 !GameTied methodsFor: 'testing game result' stamp: 'HAW 10/25/2017 16:14:31'!
 hasPlayerOWon
@@ -756,13 +1247,19 @@ isTied
 	
 	^true! !
 
+
+!GameTied methodsFor: 'as yet unclassified' stamp: 'MI 5/31/2018 21:08:53'!
+messageToBroadcast
+	
+	^ #pushGameTied:! !
+
 
-!classDefinition: #PlayerOWon category: #TicTacToe!
+!classDefinition: #PlayerOWon category: #TicTacToeConsole!
 GameOverState subclass: #PlayerOWon
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TicTacToe'!
+	category: 'TicTacToeConsole'!
 
 !PlayerOWon methodsFor: 'testing game result' stamp: 'HAW 10/25/2017 16:14:31'!
 hasPlayerOWon
@@ -777,13 +1274,19 @@ isTied
 	
 	^false! !
 
+
+!PlayerOWon methodsFor: 'as yet unclassified' stamp: 'MI 5/31/2018 21:03:56'!
+messageToBroadcast
+
+	^ #pushOWon:! !
+
 
-!classDefinition: #PlayerXWon category: #TicTacToe!
+!classDefinition: #PlayerXWon category: #TicTacToeConsole!
 GameOverState subclass: #PlayerXWon
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TicTacToe'!
+	category: 'TicTacToeConsole'!
 
 !PlayerXWon methodsFor: 'testing game result' stamp: 'HAW 10/25/2017 16:14:31'!
 hasPlayerOWon
@@ -798,13 +1301,19 @@ isTied
 	
 	^false! !
 
+
+!PlayerXWon methodsFor: 'as yet unclassified' stamp: 'MI 5/31/2018 21:00:18'!
+messageToBroadcast
+	
+	^ #pushXWon:! !
+
 
-!classDefinition: #PlayingState category: #TicTacToe!
+!classDefinition: #PlayingState category: #TicTacToeConsole!
 TicTacToeState subclass: #PlayingState
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TicTacToe'!
+	category: 'TicTacToeConsole'!
 
 !PlayingState methodsFor: 'testing game result' stamp: 'HAW 10/26/2017 12:07:10'!
 hasPlayerOWon
@@ -825,12 +1334,12 @@ isTied
 	^false! !
 
 
-!classDefinition: #PlayingO category: #TicTacToe!
+!classDefinition: #PlayingO category: #TicTacToeConsole!
 PlayingState subclass: #PlayingO
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TicTacToe'!
+	category: 'TicTacToeConsole'!
 
 !PlayingO methodsFor: 'testing playing turn' stamp: 'HAW 10/25/2017 16:18:36'!
 isPlayingO
@@ -856,13 +1365,19 @@ markWithOAt: aPosition
 markWithXAt: aPosition
 	game markWithXWhenPlayingOAt: aPosition.! !
 
+
+!PlayingO methodsFor: 'as yet unclassified' stamp: 'MI 5/31/2018 20:42:59'!
+messageToBroadcast
+
+	^ #pushPlayingO:! !
+
 
-!classDefinition: #PlayingX category: #TicTacToe!
+!classDefinition: #PlayingX category: #TicTacToeConsole!
 PlayingState subclass: #PlayingX
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TicTacToe'!
+	category: 'TicTacToeConsole'!
 
 !PlayingX methodsFor: 'testing playing turn' stamp: 'HAW 10/25/2017 16:17:50'!
 isPlayingO
@@ -887,3 +1402,9 @@ markWithOAt: aPosition
 !PlayingX methodsFor: 'marking board' stamp: 'HAW 10/26/2017 12:30:46'!
 markWithXAt: aPosition
 	game markWithXWhenPlayingXAt: aPosition.! !
+
+
+!PlayingX methodsFor: 'as yet unclassified' stamp: 'MI 5/31/2018 20:42:15'!
+messageToBroadcast
+
+	^ #pushPlayingX:! !
