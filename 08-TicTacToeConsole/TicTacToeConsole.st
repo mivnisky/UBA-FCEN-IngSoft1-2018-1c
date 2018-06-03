@@ -885,16 +885,15 @@ attach: anObserver
 
 	observers add: anObserver! !
 
+!TicTacToe methodsFor: 'observers' stamp: 'NDC 6/2/2018 18:27:05'!
+lastPlay
+	
+	^lastPositionPlayed! !
+
 !TicTacToe methodsFor: 'observers' stamp: 'NDC 6/2/2018 18:37:43'!
 notifyStateChangeToSuscribers
 
 	observers do: [ :observer | (state messageToBroadcast) sendTo: observer ]! !
-
-
-!TicTacToe methodsFor: 'as yet unclassified' stamp: 'NDC 6/2/2018 18:27:05'!
-lastPlay
-	
-	^lastPositionPlayed! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -935,28 +934,28 @@ Object subclass: #TicTacToeObserver
 	poolDictionaries: ''
 	category: 'TicTacToeConsole'!
 
-!TicTacToeObserver methodsFor: 'notifications' stamp: 'NDC 6/2/2018 18:32:50'!
-pushGameTied
+!TicTacToeObserver methodsFor: 'notifications' stamp: 'MI 6/2/2018 21:11:22'!
+pushStateChangedToGameTied
 
 	self subclassResponsibility ! !
 
-!TicTacToeObserver methodsFor: 'notifications' stamp: 'NDC 6/2/2018 18:32:54'!
-pushOWon
+!TicTacToeObserver methodsFor: 'notifications' stamp: 'MI 6/2/2018 21:11:30'!
+pushStateChangedToOWon
 
 	self subclassResponsibility ! !
 
-!TicTacToeObserver methodsFor: 'notifications' stamp: 'NDC 6/2/2018 18:32:59'!
-pushPlayingO
+!TicTacToeObserver methodsFor: 'notifications' stamp: 'MI 6/2/2018 21:11:35'!
+pushStateChangedToPlayingO
 
 	self subclassResponsibility ! !
 
-!TicTacToeObserver methodsFor: 'notifications' stamp: 'NDC 6/2/2018 18:33:23'!
-pushPlayingX
+!TicTacToeObserver methodsFor: 'notifications' stamp: 'MI 6/2/2018 21:11:39'!
+pushStateChangedToPlayingX
 
 	self subclassResponsibility ! !
 
-!TicTacToeObserver methodsFor: 'notifications' stamp: 'NDC 6/2/2018 18:33:05'!
-pushXWon
+!TicTacToeObserver methodsFor: 'notifications' stamp: 'MI 6/2/2018 21:11:43'!
+pushStateChangedToXWon
 
 	self subclassResponsibility ! !
 
@@ -993,32 +992,32 @@ initializeWith: aTicTacToeGame
 	lines := OrderedCollection new.! !
 
 
-!TicTacToeLog methodsFor: 'notifications' stamp: 'NDC 6/2/2018 18:35:16'!
-pushGameTied
+!TicTacToeLog methodsFor: 'notifications' stamp: 'MI 6/2/2018 21:09:32'!
+pushStateChangedToGameTied
 
 	self logPosition: (game lastPlay) forPlayer: 'X'.
 	lines add: 'Juego terminado - Empate!!'.! !
 
-!TicTacToeLog methodsFor: 'notifications' stamp: 'NDC 6/2/2018 18:35:10'!
-pushOWon
+!TicTacToeLog methodsFor: 'notifications' stamp: 'MI 6/2/2018 21:09:38'!
+pushStateChangedToOWon
 
 	self logPosition: (game lastPlay) forPlayer: 'O'.
 	lines add: 'Juego terminado - Ganó O!!'.! !
 
-!TicTacToeLog methodsFor: 'notifications' stamp: 'NDC 6/2/2018 18:34:53'!
-pushPlayingO
+!TicTacToeLog methodsFor: 'notifications' stamp: 'MI 6/2/2018 21:09:44'!
+pushStateChangedToPlayingO
 	
 	self logPosition: (game lastPlay) forPlayer: 'X'.
 	lines add: 'Estado: Jugando O'.! !
 
-!TicTacToeLog methodsFor: 'notifications' stamp: 'NDC 6/2/2018 18:34:44'!
-pushPlayingX
+!TicTacToeLog methodsFor: 'notifications' stamp: 'MI 6/2/2018 21:09:50'!
+pushStateChangedToPlayingX
 	
 	self logPosition: (game lastPlay) forPlayer: 'O'.
 	lines add: 'Estado: Jugando X'.! !
 
-!TicTacToeLog methodsFor: 'notifications' stamp: 'NDC 6/2/2018 18:35:01'!
-pushXWon
+!TicTacToeLog methodsFor: 'notifications' stamp: 'MI 6/2/2018 21:09:55'!
+pushStateChangedToXWon
 
 	self logPosition: (game lastPlay) forPlayer: 'X'.
 	lines add: 'Juego terminado - Ganó X!!'.! !
@@ -1054,20 +1053,20 @@ TicTacToeObserver subclass: #TicTacToeView
 	poolDictionaries: ''
 	category: 'TicTacToeConsole'!
 
-!TicTacToeView methodsFor: 'notifications' stamp: 'NDC 6/2/2018 18:31:38'!
-pushGameTied
+!TicTacToeView methodsFor: 'notifications' stamp: 'MI 6/2/2018 21:10:20'!
+pushStateChangedToGameTied
 	
 	self putCharacter: $X atPosition: (game lastPlay).
 	status := 'Game Tied!!'.! !
 
-!TicTacToeView methodsFor: 'notifications' stamp: 'NDC 6/2/2018 18:32:04'!
-pushOWon 
+!TicTacToeView methodsFor: 'notifications' stamp: 'MI 6/2/2018 21:10:28'!
+pushStateChangedToOWon 
 	
 	self putCharacter: $O atPosition: (game lastPlay).
 	status := 'O Won!!'.! !
 
-!TicTacToeView methodsFor: 'notifications' stamp: 'NDC 6/2/2018 18:32:13'!
-pushPlayingO
+!TicTacToeView methodsFor: 'notifications' stamp: 'MI 6/2/2018 21:10:33'!
+pushStateChangedToPlayingO
 
 	self putCharacter: $X atPosition: (game lastPlay).
 	status := 'Playing O'.
@@ -1075,8 +1074,8 @@ pushPlayingO
 
 	! !
 
-!TicTacToeView methodsFor: 'notifications' stamp: 'NDC 6/2/2018 18:32:20'!
-pushPlayingX
+!TicTacToeView methodsFor: 'notifications' stamp: 'MI 6/2/2018 21:10:38'!
+pushStateChangedToPlayingX
 
 	self putCharacter: $O atPosition: (game lastPlay).
 	status := 'Playing X'.
@@ -1084,8 +1083,8 @@ pushPlayingX
 
 	! !
 
-!TicTacToeView methodsFor: 'notifications' stamp: 'NDC 6/2/2018 18:32:27'!
-pushXWon
+!TicTacToeView methodsFor: 'notifications' stamp: 'MI 6/2/2018 21:10:43'!
+pushStateChangedToXWon
 
 	self putCharacter: $X atPosition: (game lastPlay).
 	status := 'X Won!!'.! !
@@ -1261,10 +1260,10 @@ isTied
 	^true! !
 
 
-!GameTied methodsFor: 'as yet unclassified' stamp: 'NDC 6/2/2018 18:36:50'!
+!GameTied methodsFor: 'as yet unclassified' stamp: 'MI 6/2/2018 21:08:36'!
 messageToBroadcast
 	
-	^ #pushGameTied! !
+	^ #pushStateChangedToGameTied! !
 
 
 !classDefinition: #PlayerOWon category: #TicTacToeConsole!
@@ -1288,10 +1287,10 @@ isTied
 	^false! !
 
 
-!PlayerOWon methodsFor: 'as yet unclassified' stamp: 'NDC 6/2/2018 18:36:41'!
+!PlayerOWon methodsFor: 'as yet unclassified' stamp: 'MI 6/2/2018 21:08:13'!
 messageToBroadcast
 
-	^ #pushOWon! !
+	^ #pushStateChangedToOWon! !
 
 
 !classDefinition: #PlayerXWon category: #TicTacToeConsole!
@@ -1315,10 +1314,10 @@ isTied
 	^false! !
 
 
-!PlayerXWon methodsFor: 'as yet unclassified' stamp: 'NDC 6/2/2018 18:36:36'!
+!PlayerXWon methodsFor: 'as yet unclassified' stamp: 'MI 6/2/2018 21:08:45'!
 messageToBroadcast
 	
-	^ #pushXWon! !
+	^ #pushStateChangedToXWon! !
 
 
 !classDefinition: #PlayingState category: #TicTacToeConsole!
@@ -1379,10 +1378,10 @@ markWithXAt: aPosition
 	game markWithXWhenPlayingOAt: aPosition.! !
 
 
-!PlayingO methodsFor: 'as yet unclassified' stamp: 'NDC 6/2/2018 18:36:31'!
+!PlayingO methodsFor: 'as yet unclassified' stamp: 'MI 6/2/2018 21:08:53'!
 messageToBroadcast
 
-	^ #pushPlayingO! !
+	^ #pushStateChangedToPlayingO! !
 
 
 !classDefinition: #PlayingX category: #TicTacToeConsole!
@@ -1417,7 +1416,7 @@ markWithXAt: aPosition
 	game markWithXWhenPlayingXAt: aPosition.! !
 
 
-!PlayingX methodsFor: 'as yet unclassified' stamp: 'NDC 6/2/2018 18:36:24'!
+!PlayingX methodsFor: 'as yet unclassified' stamp: 'MI 6/2/2018 21:09:04'!
 messageToBroadcast
 
-	^ #pushPlayingX! !
+	^ #pushStateChangedToPlayingX! !
