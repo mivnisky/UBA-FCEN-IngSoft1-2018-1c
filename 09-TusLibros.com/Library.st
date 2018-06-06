@@ -5,26 +5,28 @@ Object subclass: #Cart
 	poolDictionaries: ''
 	category: 'Library'!
 
-!Cart methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 19:18:58'!
-books
-	
-	^books! !
-
-!Cart methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 19:14:35'!
+!Cart methodsFor: 'initialization' stamp: 'NDC 6/5/2018 19:14:35'!
 initialize
 	
 	timestamp := Time now.
 	books := Dictionary new.! !
 
-!Cart methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 19:27:14'!
-serialize
-	
-	^self! !
 
-!Cart methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 19:19:07'!
+!Cart methodsFor: 'accessors' stamp: 'NDC 6/5/2018 19:18:58'!
+books
+	
+	^books! !
+
+!Cart methodsFor: 'accessors' stamp: 'NDC 6/5/2018 19:19:07'!
 timestamp
 	
 	^timestamp! !
+
+
+!Cart methodsFor: 'serialization' stamp: 'NDC 6/5/2018 19:27:14'!
+serialize
+	
+	^self! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -32,12 +34,13 @@ timestamp
 Cart class
 	instanceVariableNames: ''!
 
-!Cart class methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 19:53:51'!
+!Cart class methodsFor: 'serialization' stamp: 'NDC 6/5/2018 19:53:51'!
 deserializeCart: aSerializedCart
 	
 	^aSerializedCart copy.! !
 
-!Cart class methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 19:28:41'!
+
+!Cart class methodsFor: 'initialization' stamp: 'NDC 6/5/2018 19:28:41'!
 newEmprtyCart
 	
 	^self new initialize.! !
@@ -45,12 +48,12 @@ newEmprtyCart
 
 !classDefinition: #CartsApi category: #Library!
 Object subclass: #CartsApi
-	instanceVariableNames: 'DBPlugin'
+	instanceVariableNames: 'cartsDB'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Library'!
 
-!CartsApi methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 20:05:31'!
+!CartsApi methodsFor: 'interface' stamp: 'NDC 6/6/2018 02:38:20'!
 addToCart: aCartId theBook: aBookIsbn thisManyCopies: aQuantity
 
     | cart oldQuantity |
@@ -58,20 +61,21 @@ addToCart: aCartId theBook: aBookIsbn thisManyCopies: aQuantity
     cart := self fetchCart: aCartId.
     oldQuantity := cart books at: aBookIsbn ifAbsent: 0.
     cart books at: aBookIsbn put: oldQuantity + aQuantity.
-    DBPlugin put: cart serialize atKey: aCartId.
+    self saveCart: cart withId: aCartId.
     ^0@'OK'.! !
 
-!CartsApi methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 19:46:32'!
+!CartsApi methodsFor: 'interface' stamp: 'NDC 6/6/2018 02:50:52'!
 createCartWithClientId: aClientId andPassword: aPassword
-	
-    ^DBPlugin createRecordWith: Cart newEmprtyCart serialize.! !
 
-!CartsApi methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 20:02:59'!
-fetchCart: aCartId
+    | newId |
 	
-    ^Cart deserializeCart: (DBPlugin getValueOfKey: aCartId).! !
+	newId := cartsDB size.
+	
+     self saveCart: (Cart newEmprtyCart serialize) withId: newId.
 
-!CartsApi methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 20:06:06'!
+     ^0@newId! !
+
+!CartsApi methodsFor: 'interface' stamp: 'NDC 6/5/2018 20:06:06'!
 listCart: aCartId
 
     | cart |
@@ -79,11 +83,22 @@ listCart: aCartId
     cart := self fetchCart: aCartId.
     ^0@(cart books printString).! !
 
-!CartsApi methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 18:41:40'!
-withDb: aDb
+
+!CartsApi methodsFor: 'initialization' stamp: 'NDC 6/6/2018 02:40:52'!
+initialize
 	
+    cartsDB := Dictionary new.! !
+
+
+!CartsApi methodsFor: 'dbAccess' stamp: 'NDC 6/6/2018 02:40:23'!
+fetchCart: aCartId
 	
-    DBPlugin := aDb createPluginOf: 'carts'.! !
+    ^Cart deserializeCart: (cartsDB at: aCartId).! !
+
+!CartsApi methodsFor: 'dbAccess' stamp: 'NDC 6/6/2018 02:40:02'!
+saveCart: cart withId: aCartId
+	
+    cartsDB at: aCartId put: (cart serialize)! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -91,104 +106,35 @@ withDb: aDb
 CartsApi class
 	instanceVariableNames: ''!
 
-!CartsApi class methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 18:40:14'!
-attachedToDb: aDb
-	
-	^self new withDb: aDb.! !
-
-
-!classDefinition: #Database category: #Library!
-Object subclass: #Database
-	instanceVariableNames: 'DB'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Library'!
-
-!Database methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 19:03:03'!
-createPluginOf: aCluster
-	
-	^DatabasePlugin initializeWithCluster: (DB at: aCluster ifAbsentPut: (OrderedCollection new)).! !
-
-!Database methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 18:42:43'!
-initialize
-	
-	DB := Dictionary new.! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'Database class' category: #Library!
-Database class
-	instanceVariableNames: ''!
-
-!Database class methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 18:42:20'!
-initialize
+!CartsApi class methodsFor: 'initialization' stamp: 'NDC 6/6/2018 02:35:49'!
+initializeNewApi
 	
 	^self new initialize.! !
 
 
-!classDefinition: #DatabasePlugin category: #Library!
-Object subclass: #DatabasePlugin
-	instanceVariableNames: 'map cluster'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Library'!
-
-!DatabasePlugin methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 19:34:03'!
-createRecordWith: data
-
-	cluster add: (data storeString).
-	^cluster size.! !
-
-!DatabasePlugin methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 19:55:44'!
-getValueOfKey: aKey
-
-	^cluster at: aKey.! !
-
-!DatabasePlugin methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 18:50:00'!
-initializeWithCluster: aDBCluster
-
-	cluster := aDBCluster.! !
-
-!DatabasePlugin methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 18:57:25'!
-put: data atKey: aKey
-
-	^cluster at: aKey put: data.! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'DatabasePlugin class' category: #Library!
-DatabasePlugin class
-	instanceVariableNames: ''!
-
-!DatabasePlugin class methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 18:49:48'!
-initializeWithCluster: aDBCluster
-	
-	^self new initializeWithCluster: aDBCluster.! !
-
-
 !classDefinition: #Library category: #Library!
 Object subclass: #Library
-	instanceVariableNames: 'carts db'
+	instanceVariableNames: 'carts'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Library'!
 
-!Library methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 18:18:03'!
+!Library methodsFor: 'initialization' stamp: 'NDC 6/6/2018 02:35:21'!
+initialize
+	carts _ CartsApi initializeNewApi.! !
+
+
+!Library methodsFor: 'interface' stamp: 'NDC 6/5/2018 18:18:03'!
 addToCart: aCartId theBook: aBookIsbn thisManyCopies: aQuantity
 	
 	^carts addToCart: aCartId theBook: aBookIsbn thisManyCopies: aQuantity.! !
 
-!Library methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 18:14:41'!
+!Library methodsFor: 'interface' stamp: 'NDC 6/5/2018 18:14:41'!
 createCartWithClientId: aClientId andPassword: aPassword
 	
 	^carts createCartWithClientId: aClientId andPassword: aPassword.! !
 
-!Library methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 19:12:58'!
-initialize
-	db _ Database initialize.
-	carts _ CartsApi attachedToDb: db.! !
-
-!Library methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 18:19:26'!
+!Library methodsFor: 'interface' stamp: 'NDC 6/5/2018 18:19:26'!
 listCart: aCartId
 	
 	^carts listCart: aCartId.! !
@@ -199,10 +145,9 @@ listCart: aCartId
 Library class
 	instanceVariableNames: ''!
 
-!Library class methodsFor: 'as yet unclassified' stamp: 'NDC 6/5/2018 18:28:07'!
+!Library class methodsFor: 'initialization' stamp: 'NDC 6/5/2018 18:28:07'!
 initialize
 	
      ^self new initialize.! !
 
-Database initialize!
 Library initialize!
