@@ -22,8 +22,19 @@ test02canAddCartToBookstore
 	self assert: response y = 0.
 	! !
 
-!BookstoreTest methodsFor: 'testing' stamp: 'MI 6/6/2018 17:21:43'!
-test03canListEmptyCart
+!BookstoreTest methodsFor: 'testing' stamp: 'MI 6/6/2018 23:01:28'!
+test03cartsHaveUniqueIDs
+
+	| bookstore idSet |
+	
+	idSet _ Set new.
+	bookstore _ Bookstore initialize.
+	(1 to: 10) do: [ :num | idSet add: (bookstore createCartWithClientId: 0101 andPassword: 'pass') y ].
+	
+	self assert: idSet size = 10.! !
+
+!BookstoreTest methodsFor: 'testing' stamp: 'MI 6/6/2018 23:01:39'!
+test04canListEmptyCart
 
 	| bookstore cartId response |
 	
@@ -34,8 +45,8 @@ test03canListEmptyCart
 	self assert: response x = 0.
 	self assert: response y isEmpty.! !
 
-!BookstoreTest methodsFor: 'testing' stamp: 'MI 6/6/2018 17:50:26'!
-test04cannotListACartThatDoesntExist
+!BookstoreTest methodsFor: 'testing' stamp: 'MI 6/6/2018 23:01:48'!
+test05cannotListACartThatDoesntExist
 
 	| bookstore response |
 	
@@ -45,25 +56,40 @@ test04cannotListACartThatDoesntExist
 	self assert: response x = 1.
 	self assert: response y = CartsApi cartDoesntExistErrorMessage.! !
 
-!BookstoreTest methodsFor: 'testing' stamp: 'MI 6/6/2018 17:48:23'!
-test05canAddBookToCatalogue
+!BookstoreTest methodsFor: 'testing' stamp: 'MI 6/6/2018 23:02:01'!
+test06canAddBookToCatalogue
 
-	| bookstore book |
+	| bookstore |
 	
-	book _ Book with: '0-201-63361-2'.
 	bookstore _ Bookstore initialize.
-	bookstore addBook: book.! !
+	bookstore registerNewBook: 0201633612.! !
 
-!BookstoreTest methodsFor: 'testing' stamp: 'MI 6/6/2018 17:48:33'!
-test06canAddAvailableBookToCart
+!BookstoreTest methodsFor: 'testing' stamp: 'MI 6/6/2018 23:03:35'!
+test07cannotRegisterInvalidISBN
 
-	| bookstore book cartId response cartList |
+	| bookstore invalidISBN bookstoreResponse cartResponse cartId |
 	
-	book _ Book with: '0-201-63361-2'.	
+	invalidISBN _ 00001.
 	bookstore _ Bookstore initialize.
-	bookstore addBook: book.
-	cartId _ (bookstore createCartWithClientId: 0101 andPassword: 'pass') y.
-	response _ bookstore addToCart: cartId theBook: book thisManyCopies: 6.
+	bookstoreResponse _ bookstore registerNewBook: invalidISBN.
+	cartId _ (bookstore createCartWithClientId: 101 andPassword: 'pass') y.
+	cartResponse _ bookstore addToCart: cartId theBook: invalidISBN thisManyCopies: 1.
+
+	self assert: bookstoreResponse x = 1.
+	self assert: bookstoreResponse y = BooksApi invalidISBNErrorMessage.
+	self assert: cartResponse x = 1.
+	self assert: cartResponse y = CartsApi bookNotAvailableErrorMessage.! !
+
+!BookstoreTest methodsFor: 'testing' stamp: 'MI 6/6/2018 23:03:51'!
+test08canAddAvailableBookToCart
+
+	| bookstore cartId response cartList isbn |
+	
+	isbn _ 0201633612.
+	bookstore _ Bookstore initialize.
+	bookstore registerNewBook: isbn.
+	cartId _ (bookstore createCartWithClientId: 101 andPassword: 'pass') y.
+	response _ bookstore addToCart: cartId theBook: isbn thisManyCopies: 6.
 	cartList _ bookstore listCart: cartId.
 	
 	self assert: response x = 0.
@@ -71,71 +97,61 @@ test06canAddAvailableBookToCart
 	self assert: cartList x = 0.
 	self assert: cartList y size = 1.
 	self assert: (cartList y at: 1) x = 6.
-	self assert: (cartList y at: 1) y isbn = '0-201-63361-2'.
-	! !
+	self assert: (cartList y at: 1) y = 0201633612.! !
 
-!BookstoreTest methodsFor: 'testing' stamp: 'MI 6/6/2018 18:29:43'!
-test07cannotAddNotAvailableBookToCart
+!BookstoreTest methodsFor: 'testing' stamp: 'MI 6/6/2018 23:04:09'!
+test09cannotAddNotAvailableBookToCart
 
-	| bookstore book cartId response cartList |
+	| bookstore isbn cartId response cartList |
 	
-	book _ Book with: '0-201-63361-2'.	
+	isbn _ 0201633612.
 	bookstore _ Bookstore initialize.
-	cartId _ (bookstore createCartWithClientId: 0101 andPassword: 'pass') y.
-	response _ bookstore addToCart: cartId theBook: book thisManyCopies: 6.
+	cartId _ (bookstore createCartWithClientId: 101 andPassword: 'pass') y.
+	response _ bookstore addToCart: cartId theBook: isbn thisManyCopies: 6.
 	cartList _ bookstore listCart: cartId.
 	
 	self assert: response x = 1.
 	self assert: response y = CartsApi bookNotAvailableErrorMessage.
 	self assert: cartList x = 0.
-	self assert: cartList y isEmpty.	! !
+	self assert: cartList y isEmpty.! !
 
-!BookstoreTest methodsFor: 'testing' stamp: 'MI 6/6/2018 18:32:48'!
-test08cannotAddNegativeQuantityToCart
+!BookstoreTest methodsFor: 'testing' stamp: 'MI 6/6/2018 23:06:41'!
+test10cannotAddInvalidQuantityToCart
 
-	| bookstore book cartId response cartList |
+	| bookstore isbn cartId response cartList |
 	
-	book _ Book with: '0-201-63361-2'.	
+	isbn _ 0201633612.
 	bookstore _ Bookstore initialize.
-	bookstore addBook: book.
-	cartId _ (bookstore createCartWithClientId: 0101 andPassword: 'pass') y.
-	response _ bookstore addToCart: cartId theBook: book thisManyCopies: -1.
-	cartList _ bookstore listCart: cartId.
+	bookstore registerNewBook: isbn.
+	cartId _ (bookstore createCartWithClientId: 101 andPassword: 'pass') y.
+	
+	response _ bookstore addToCart: cartId theBook: isbn thisManyCopies: -1.
 	
 	self assert: response x = 1.
 	self assert: response y = CartsApi negativeQuantityErrorMessage.
+	
+	response _ bookstore addToCart: cartId theBook: isbn thisManyCopies: 0.
+	
+	self assert: response x = 1.
+	self assert: response y = CartsApi negativeQuantityErrorMessage.
+	
+	cartList _ bookstore listCart: cartId.
+	
 	self assert: cartList x = 0.
-	self assert: cartList y isEmpty.	! !
+	self assert: cartList y isEmpty.! !
 
-
-!classDefinition: #Book category: #TusLibros!
-Object subclass: #Book
-	instanceVariableNames: 'isbn'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'TusLibros'!
+!BookstoreTest methodsFor: 'testing' stamp: 'MI 6/6/2018 23:10:55'!
+test11cannotAddBookToACartThatDoesntExist
 
-!Book methodsFor: 'initialization' stamp: 'MI 6/6/2018 15:41:00'!
-with: aBookISBN
-
-	isbn := aBookISBN.! !
-
-
-!Book methodsFor: 'as yet unclassified' stamp: 'MI 6/6/2018 17:45:11'!
-isbn
-
-	^ isbn! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'Book class' category: #TusLibros!
-Book class
-	instanceVariableNames: ''!
-
-!Book class methodsFor: 'instance creation' stamp: 'MI 6/6/2018 15:40:08'!
-with: aBookISBN
-
-	^ self new with: aBookISBN! !
+	| bookstore isbn response |
+	
+	isbn _ 0201633612.
+	bookstore _ Bookstore initialize.
+	bookstore registerNewBook: isbn.
+	response _ bookstore addToCart: 3 theBook: isbn thisManyCopies: 6.
+	
+	self assert: response x = 1.
+	self assert: response y = CartsApi cartDoesntExistErrorMessage.! !
 
 
 !classDefinition: #BooksApi category: #TusLibros!
@@ -151,15 +167,23 @@ initialize
 	booksDB _ Set new.! !
 
 
-!BooksApi methodsFor: 'dbAccess' stamp: 'MI 6/6/2018 16:06:11'!
-addBook: aBook
-
-	booksDB add: aBook! !
-
 !BooksApi methodsFor: 'dbAccess' stamp: 'MI 6/6/2018 17:38:48'!
 checkBookAvailability: aBook
 
 	^ booksDB includes: aBook! !
+
+!BooksApi methodsFor: 'dbAccess' stamp: 'MI 6/6/2018 22:24:16'!
+registerNewBook: aBookISBN
+
+	(self validateISBN: aBookISBN) ifFalse: [ self error: self class invalidISBNErrorMessage ].
+	booksDB add: aBookISBN. 
+	^ 0@'OK'! !
+
+
+!BooksApi methodsFor: 'validation' stamp: 'MI 6/6/2018 22:42:54'!
+validateISBN: anISBN
+	
+	^ (((0 to: 9) inject: 0 into: [ :subtotal :digit | subtotal + (digit + 1 * (anISBN // (10 raisedTo: digit) mod: 10)) ]) mod: 11) = 0! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -171,6 +195,12 @@ BooksApi class
 newApi
 	
 	^ self new initialize! !
+
+
+!BooksApi class methodsFor: 'error message' stamp: 'MI 6/6/2018 22:21:27'!
+invalidISBNErrorMessage
+
+	^ 'The number provided does not correspond to a valid ISBN'! !
 
 
 !classDefinition: #Bookstore category: #TusLibros!
@@ -187,15 +217,10 @@ initialize
 	catalogue _ BooksApi newApi.! !
 
 
-!Bookstore methodsFor: 'interface' stamp: 'MI 6/6/2018 16:51:17'!
-addBook: aBook
-
-	catalogue addBook: aBook! !
-
-!Bookstore methodsFor: 'interface' stamp: 'MI 6/6/2018 18:26:59'!
+!Bookstore methodsFor: 'interface' stamp: 'MI 6/6/2018 22:54:28'!
 addToCart: aCartId theBook: aBook thisManyCopies: aQuantity
 	
-	^ [ carts addToCart: aCartId theBook: aBook thisManyCopies: aQuantity ] on: Error do: [ :error | 1@(error messageText) ] ! !
+	^ self handleErrorIfThrowsUponExecutionOf: [ carts addToCart: aCartId theBook: aBook thisManyCopies: aQuantity ]! !
 
 !Bookstore methodsFor: 'interface' stamp: 'MI 6/6/2018 17:38:21'!
 checkBookAvailability: aBook
@@ -207,10 +232,21 @@ createCartWithClientId: aClientId andPassword: aPassword
 	
 	^ carts createCartWithClientId: aClientId andPassword: aPassword.! !
 
-!Bookstore methodsFor: 'interface' stamp: 'MI 6/6/2018 18:27:07'!
+!Bookstore methodsFor: 'interface' stamp: 'MI 6/6/2018 22:54:43'!
 listCart: aCartId
 	
-	^ [ carts listCart: aCartId ] on: Error do: [ :error | 1@(error messageText)]! !
+	^ self handleErrorIfThrowsUponExecutionOf: [ carts listCart: aCartId ]! !
+
+!Bookstore methodsFor: 'interface' stamp: 'MI 6/6/2018 22:54:52'!
+registerNewBook: aBookISBN
+
+	^ self handleErrorIfThrowsUponExecutionOf: [ catalogue registerNewBook: aBookISBN ]! !
+
+
+!Bookstore methodsFor: 'error handling' stamp: 'MI 6/6/2018 22:55:34'!
+handleErrorIfThrowsUponExecutionOf: aBlock
+	
+	^ [ aBlock value ] on: Error do: [ :error | 1@(error messageText) ]! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -279,12 +315,12 @@ Object subclass: #CartsApi
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!CartsApi methodsFor: 'interface' stamp: 'MI 6/6/2018 18:35:37'!
+!CartsApi methodsFor: 'interface' stamp: 'MI 6/6/2018 22:44:53'!
 addToCart: aCartId theBook: aBook thisManyCopies: aQuantity
 
 	| cart oldQuantity |
 	
-	(aQuantity <= 1) ifTrue: [ self error: self class negativeQuantityErrorMessage ].
+	(aQuantity <= 0) ifTrue: [ self error: self class negativeQuantityErrorMessage ].
 	(bookstore checkBookAvailability: aBook) ifFalse: [ self error: self class bookNotAvailableErrorMessage ].
 	
 	cart _ self fetchCart: aCartId.
