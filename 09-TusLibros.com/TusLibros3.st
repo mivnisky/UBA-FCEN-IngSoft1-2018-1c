@@ -139,8 +139,8 @@ test02CalculatedTotalIsCorrect
 		
 	self assert: cashier checkOut = (testObjectsFactory itemSellByTheStorePrice * 2)! !
 
-!CashierTest methodsFor: 'tests' stamp: 'MI 6/14/2018 02:12:11'!
-test03CanNotCheckoutWithAnExpiredCreditCart
+!CashierTest methodsFor: 'tests' stamp: 'NDC 6/14/2018 13:56:37'!
+test03CashierShouldNotProceedToCheckoutWithAnExpiredCreditCart
 
 	| cart salesBook |
 
@@ -154,12 +154,11 @@ test03CanNotCheckoutWithAnExpiredCreditCart
 				charging: testObjectsFactory expiredCreditCard 
 				on: testObjectsFactory today
 				registeringOn: salesBook
-				processingWith: testObjectsFactory acceptedCardMerchantProcessorSimulator ]
+				processingWith: testObjectsFactory expiredCardMerchantProcessorSimulator ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError | 
 			self assert: anError messageText = Cashier canNotChargeAnExpiredCreditCardErrorMessage.
-			self assert: salesBook isEmpty.
-			self deny: (SystemDictionary new allSentMessages includes: #debit:from:)]! !
+			self assert: salesBook isEmpty.]! !
 
 !CashierTest methodsFor: 'tests' stamp: 'MI 6/14/2018 01:35:41'!
 test04CheckoutRegistersASale
@@ -337,11 +336,11 @@ checkOut
 	
 	^total! !
 
-!Cashier methodsFor: 'checkout' stamp: 'MI 6/14/2018 01:09:46'!
+!Cashier methodsFor: 'checkout' stamp: 'NDC 6/14/2018 13:54:06'!
 initializeToCheckout: aCart charging: aCreditCard registeringOn: aSalesBook processingWith: aMerchantProcessor
 	
 	cart := aCart.
-	creditCart := aCreditCard.
+	creditCard := aCreditCard.
 	salesBook := aSalesBook.
 	merchantProcessor := aMerchantProcessor ! !
 
@@ -434,6 +433,11 @@ canNotChargeAStolenCreditCardErrorMessage
 
 	^ 'Cannot charge a stolen credit card'! !
 
+!MerchantProcessorSimulator class methodsFor: 'error messages' stamp: 'NDC 6/14/2018 13:29:23'!
+shouldNotOperateWithExpiredCard
+
+	^ 'A Merchant Processor should not operate with an expired card'! !
+
 
 !MerchantProcessorSimulator class methodsFor: 'as yet unclassified' stamp: 'MI 6/14/2018 01:39:03'!
 canNotChargeACreditCardWithNoCreditErrorMessage
@@ -450,6 +454,19 @@ MerchantProcessorSimulator subclass: #MerchantProcessorAcceptedCardSimulator
 
 !MerchantProcessorAcceptedCardSimulator methodsFor: 'debit' stamp: 'MI 6/14/2018 01:26:15'!
 debit: anAmount from: aCreditCard! !
+
+
+!classDefinition: #MerchantProcessorExpiredCardSimulator category: #TusLibros!
+MerchantProcessorSimulator subclass: #MerchantProcessorExpiredCardSimulator
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+!MerchantProcessorExpiredCardSimulator methodsFor: 'debit' stamp: 'NDC 6/14/2018 13:28:29'!
+debit: anAmount from: aCreditCard
+
+	^ self error: self class shouldNotOperateWithExpiredCard ! !
 
 
 !classDefinition: #MerchantProcessorNoCreditCardSimulator category: #TusLibros!
@@ -533,6 +550,11 @@ defaultCatalog
 acceptedCardMerchantProcessorSimulator
 
 	^ MerchantProcessorAcceptedCardSimulator new.! !
+
+!StoreTestObjectsFactory methodsFor: 'merchant processor' stamp: 'NDC 6/14/2018 13:48:26'!
+expiredCardMerchantProcessorSimulator
+
+	^ MerchantProcessorExpiredCardSimulator new.! !
 
 !StoreTestObjectsFactory methodsFor: 'merchant processor' stamp: 'MI 6/14/2018 01:38:13'!
 noCreditCardMerchantProcessorSimulator
