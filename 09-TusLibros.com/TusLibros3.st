@@ -139,8 +139,10 @@ test02CalculatedTotalIsCorrect
 		
 	self assert: cashier checkOut = (testObjectsFactory itemSellByTheStorePrice * 2)! !
 
-!CashierTest methodsFor: 'tests' stamp: 'NDC 6/14/2018 13:56:37'!
+!CashierTest methodsFor: 'tests' stamp: 'NDC 6/14/2018 16:48:26'!
 test03CashierShouldNotProceedToCheckoutWithAnExpiredCreditCart
+
+   "Si se le envia un mensaje a una instancia de  'expiredCardMerchantProcessorSimulator' se gerea una excepcion de un cierto tipo X. En el test verificamos que X no haya sido generada, por contrareciproco esto asegura que el cajero no le haya enviado mensajes al merchant procesor "
 
 	| cart salesBook |
 
@@ -493,6 +495,14 @@ MerchantProcessorSimulator subclass: #MerchantProcessorStolenCardSimulator
 debit: anAmount from: aCreditCard
 
 	^ self error: self class canNotChargeAStolenCreditCardErrorMessage! !
+
+
+!classDefinition: #NameOfSubclass category: #TusLibros!
+Object subclass: #NameOfSubclass
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
 
 
 !classDefinition: #Sale category: #TusLibros!
