@@ -260,7 +260,7 @@ setUp
 	clientValidationBehavior := [ :aClientID :aPassword | ]! !
 
 
-!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 02:32:22'!
+!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 15:48:53'!
 test01CanCreateANewCartForAValidClient
 
 	| store cartID |
@@ -270,7 +270,7 @@ test01CanCreateANewCartForAValidClient
 		andPassword: testObjectsFactory password
 		on: testObjectsFactory now.
 	
-	self assert: cartID = 1.! !
+	self assert: cartID = 0.! !
 
 !StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 02:32:40'!
 test02CanNotCreateANewCartForAnInvalidClient
@@ -308,8 +308,23 @@ test03CanAddItemsToCart
 	self assert: cartList size = 1.
 	self assert: (cartList at: testObjectsFactory itemSellByTheStore) = 8.! !
 
-!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 02:34:09'!
-test04CanCheckOutCart
+!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 15:53:55'!
+test04CanNotAddItemsToInvalidCart
+
+	| store |
+	
+	store _ Store withCatalog: testObjectsFactory defaultCatalog andClientDatabase: self.
+	
+	self 
+		should: [ store add: 8 of: testObjectsFactory itemSellByTheStore toCart: 9 on: testObjectsFactory now ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :anError | 
+			self assert: anError messageText = Store invalidCartIdErrorMessage ]
+	
+	! !
+
+!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 15:54:09'!
+test05CanCheckOutCart
 
 	| store cartID transactionID |
 	
@@ -325,8 +340,24 @@ test04CanCheckOutCart
 			
 	self assert: transactionID = 1.! !
 
-!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 02:35:23'!
-test05CanListValidClientEmptyPurchases
+!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 15:54:27'!
+test06CanNotCheckOutInvalidCart
+
+	| store |
+	
+	store _ Store withCatalog: testObjectsFactory defaultCatalog andClientDatabase: self.
+	
+	self 
+		should: [ store checkOutCart: 9
+			charging: testObjectsFactory notExpiredCreditCard
+			through: self
+			on: testObjectsFactory now. ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :anError | 
+			self assert: anError messageText = Store invalidCartIdErrorMessage ]! !
+
+!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 15:54:59'!
+test07CanListValidClientEmptyPurchases
 
 	| store purchases |
 	
@@ -338,23 +369,8 @@ test05CanListValidClientEmptyPurchases
 	self assert: purchases total = 0.
 	self assert: purchases detail isEmpty.! !
 
-!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 02:35:14'!
-test06CanNotListPurchasesOfAnInvalidClient
-
-	| store |
-	
-	store _ Store withCatalog: testObjectsFactory defaultCatalog andClientDatabase: self.
-	clientValidationBehavior _ [ :aClientID :aPassword | self error: Store invalidClientCredentialsErrorMessage ].
-		
-	self 
-		should: [ store listPurchasesFromClient: testObjectsFactory clientID 
-			withPassword: testObjectsFactory password ]
-		raise: Error - MessageNotUnderstood
-		withExceptionDo: [ :anError | 
-			self assert: anError messageText = Store invalidClientCredentialsErrorMessage ]! !
-
-!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 02:36:00'!
-test07CanCorrectlyListPurchasesFromValidClient
+!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 15:56:06'!
+test08CanCorrectlyListPurchasesFromValidClient
 
 	| store cartID purchases |
 	
@@ -378,8 +394,23 @@ test07CanCorrectlyListPurchasesFromValidClient
 	self assert: purchases detail size = 1.
 	self assert: (purchases detail at: testObjectsFactory itemSellByTheStore) = 8.! !
 
-!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 02:36:28'!
-test08CanListPurchasesFromMoreThanOneSaleForAValidClient
+!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 15:56:55'!
+test09CanNotListPurchasesOfAnInvalidClient
+
+	| store |
+	
+	store _ Store withCatalog: testObjectsFactory defaultCatalog andClientDatabase: self.
+	clientValidationBehavior _ [ :aClientID :aPassword | self error: Store invalidClientCredentialsErrorMessage ].
+		
+	self 
+		should: [ store listPurchasesFromClient: testObjectsFactory clientID 
+			withPassword: testObjectsFactory password ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :anError | 
+			self assert: anError messageText = Store invalidClientCredentialsErrorMessage ]! !
+
+!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 15:57:15'!
+test10CanListPurchasesFromMoreThanOneSaleForAValidClient
 
 	| store cartID purchases |
 	
@@ -414,8 +445,8 @@ test08CanListPurchasesFromMoreThanOneSaleForAValidClient
 	self assert: purchases detail size = 1.
 	self assert: (purchases detail at: testObjectsFactory itemSellByTheStore) = 5.! !
 
-!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 02:36:57'!
-test09CanNotAddItemsToACartCreatedMoreThan30MinutesAgo
+!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 15:58:17'!
+test11CanNotAddItemsToACartCreatedMoreThan30MinutesAgo
 
 	| store cartID |
 	
@@ -434,8 +465,8 @@ test09CanNotAddItemsToACartCreatedMoreThan30MinutesAgo
 
 	! !
 
-!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 02:37:17'!
-test10CanNotListCartCreatedMoreThan30MinutesAgo
+!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 15:58:38'!
+test12CanNotListCartCreatedMoreThan30MinutesAgo
 
 	| store cartID |
 	
@@ -453,8 +484,8 @@ test10CanNotListCartCreatedMoreThan30MinutesAgo
 
 	! !
 
-!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 02:37:37'!
-test11CanNotCheckOutACartCreatedMoreThan30MinutesAgo
+!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 15:59:08'!
+test13CanNotCheckOutACartCreatedMoreThan30MinutesAgo
 
 	| store cartID |
 	
@@ -475,6 +506,32 @@ test11CanNotCheckOutACartCreatedMoreThan30MinutesAgo
 			purchases _ store listPurchasesFromClient: testObjectsFactory clientID 
 				withPassword: testObjectsFactory password.
 			self assert: purchases total = 0 ]
+
+	! !
+
+!StoreTest methodsFor: 'tests' stamp: 'MI 6/18/2018 15:59:26'!
+test14CanNotCheckOutACartThatHasAlreadyBeenCheckedOut
+
+	| store cartID |
+	
+	store _ Store withCatalog: testObjectsFactory defaultCatalog andClientDatabase: self.
+	cartID _ store createCartWithClientId: testObjectsFactory clientID
+		andPassword: testObjectsFactory password
+		on: testObjectsFactory now.
+	store add: 1 of: testObjectsFactory itemSellByTheStore toCart: cartID on: testObjectsFactory now.
+	store checkOutCart: cartID
+		charging: testObjectsFactory notExpiredCreditCard
+		through: self
+		on: testObjectsFactory now.
+	
+	self 
+		should: [ store checkOutCart: cartID
+			charging: testObjectsFactory notExpiredCreditCard
+			through: self
+			on: testObjectsFactory now ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :anError |
+			self assert: anError messageText = Store invalidCartIdErrorMessage ]
 
 	! !
 
@@ -783,6 +840,16 @@ Object subclass: #Store
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
+!Store methodsFor: 'private' stamp: 'MI 6/18/2018 15:47:57'!
+addCart: aCart forClient: aClientID
+
+	| cartID |
+	
+	cartID _ carts size.
+	carts at: cartID put: aCart.
+	clientForCart at: cartID put: aClientID.
+	^ cartID ! !
+
 !Store methodsFor: 'private' stamp: 'MI 6/18/2018 01:31:22'!
 assertIsNotExpired: cart on: aDateTime
 
@@ -803,6 +870,12 @@ getClientForCart: aCartID
 
 	^  clientForCart at: aCartID! !
 
+!Store methodsFor: 'private' stamp: 'MI 6/18/2018 15:41:24'!
+removeCart: aCartID
+
+	carts removeKey: aCartID.
+	clientForCart removeKey: aCartID.! !
+
 !Store methodsFor: 'private' stamp: 'MI 6/18/2018 01:12:11'!
 updateClient: clientID withSaleInformation: aSale
 
@@ -814,10 +887,10 @@ updateClient: clientID withSaleInformation: aSale
 	! !
 
 
-!Store methodsFor: 'initialization' stamp: 'MI 6/18/2018 00:49:22'!
+!Store methodsFor: 'initialization' stamp: 'MI 6/18/2018 15:42:51'!
 withCatalog: aCatalog andClientDatabase: aClientDatabase
 
-	carts _ OrderedCollection new.
+	carts _ Dictionary new.
 	catalog _ aCatalog.
 	clientDatabase _ aClientDatabase.
 	salesBook _ Dictionary new.
@@ -834,7 +907,7 @@ add: aQuantity of: aProduct toCart: aCartID on: aDateTime
 	self assertIsNotExpired: cart on: aDateTime.
 	cart add: aQuantity of: aProduct.! !
 
-!Store methodsFor: 'store protocol' stamp: 'MI 6/18/2018 02:14:04'!
+!Store methodsFor: 'store protocol' stamp: 'MI 6/18/2018 15:48:41'!
 checkOutCart: aCartID charging: aCreditCard through: aMerchantProcessor on: aDateTime
 
 	| cart cashier cashierSalesBook clientID |
@@ -850,9 +923,10 @@ checkOutCart: aCartID charging: aCreditCard through: aMerchantProcessor on: aDat
 		registeringOn: cashierSalesBook.
 		
 	cashier checkOut.
-		
+
 	clientID _ clientForCart at: aCartID.
 	self updateClient: clientID withSaleInformation: (cashierSalesBook at: 1).
+	self removeCart: aCartID.
 	transactionID _ transactionID + 1.
 	^ transactionID
 	
@@ -860,18 +934,14 @@ checkOutCart: aCartID charging: aCreditCard through: aMerchantProcessor on: aDat
 	
 	! !
 
-!Store methodsFor: 'store protocol' stamp: 'MI 6/18/2018 01:50:34'!
+!Store methodsFor: 'store protocol' stamp: 'MI 6/18/2018 15:46:45'!
 createCartWithClientId: aClientID andPassword: aPassword on: aDateTime
 
-	| newCart newCartID |
+	| newCart |
 
 	self assertIsValidClient: aClientID withPassword: aPassword.
-	newCart _ Cart 	acceptingItemsOf: catalog createdOn: aDateTime.
-	carts add: newCart.
-	newCartID _ carts size.
-	clientForCart at: newCartID put: aClientID.
-	^ newCartID 
-	! !
+	newCart _ Cart acceptingItemsOf: catalog createdOn: aDateTime.
+	^ self addCart: newCart forClient: aClientID.! !
 
 !Store methodsFor: 'store protocol' stamp: 'MI 6/18/2018 01:55:43'!
 listCartWithId: aCartID on: aDateTime
